@@ -1,0 +1,136 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import LabeledInput from "../GUIManagement/LabeledInput";
+import ActionButton from "../GUIManagement/ActionButton";
+
+import { registerUser } from "../Services/authService";
+import logo from "../assets/logo.jpg";
+
+
+export default function SignupPage() {
+  const navigate = useNavigate();
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+
+  async function handleSignup(e) {
+    e.preventDefault();
+
+    try {
+      setError("");
+
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const user = userCredential.user;
+
+      await setDoc(doc(db, "students", user.uid), {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        role: "student",
+        createdAt: new Date(),
+      });
+
+      navigate("/home");
+    } catch (err) {
+      setError("אירעה שגיאה בהרשמה. בדקו שהאימייל תקין ושהסיסמה מספיק חזקה.");
+      console.log(err.message);
+    }
+  }
+
+  return (
+    <div
+      dir="rtl"
+      className="min-h-screen bg-slate-50 flex items-center justify-center"
+    >
+      <div className="w-[1000px] min-h-[600px] bg-white rounded-2xl shadow-2xl overflow-hidden flex">
+        <section className="w-3/5 p-14 flex flex-col justify-center">
+          <h2 className="text-4xl font-bold text-[oklch(48.8%_0.243_264.376)] mb-3">
+            הרשמה
+          </h2>
+
+          <p className="text-slate-600 mb-8">
+            צרו חשבון חדש במערכת ביו־בוט
+          </p>
+
+          <form onSubmit={handleSignup}>
+            <LabeledInput
+              label="שם פרטי"
+              type="text"
+              placeholder="הכנס שם פרטי"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+
+            <LabeledInput
+              label="שם משפחה"
+              type="text"
+              placeholder="הכנס שם משפחה"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+
+            <LabeledInput
+              label="אימייל"
+              type="email"
+              placeholder="הכנס אימייל"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <LabeledInput
+              label="סיסמה"
+              type="password"
+              placeholder="הכנס סיסמה"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {error && (
+              <p className="text-red-500 text-sm mb-4">
+                {error}
+              </p>
+            )}
+
+            <ActionButton text="יצירת חשבון" type="submit" />
+
+            <button
+              type="button"
+              onClick={() => navigate("/login")}
+              className="block mx-auto mt-5 text-sm text-slate-500 hover:text-[oklch(48.8%_0.243_264.376)]"
+            >
+              כבר יש לך חשבון? התחברות
+            </button>
+          </form>
+        </section>
+
+        <section className="w-2/5 bg-[oklch(48.8%_0.243_264.376)] text-white flex flex-col items-center justify-center p-12">
+          <img
+            src={logo}
+            alt="BIOBOT Logo"
+            className="w-40 h-40 rounded-full bg-white object-contain p-3 mb-8"
+          />
+
+          <h1 className="text-5xl font-extrabold mb-4">BIOBOT 2.0</h1>
+
+          <p className="text-2xl font-bold text-center">
+            הצטרפות למערכת ביו־בוט
+          </p>
+
+          <p className="text-center mt-4 text-white/90">
+            גישה מהירה למידע אקדמי, נהלים וטפסים במקום אחד
+          </p>
+        </section>
+      </div>
+    </div>
+  );
+}
