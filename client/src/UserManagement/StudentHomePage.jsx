@@ -1,37 +1,22 @@
 import { useNavigate } from "react-router-dom";
 
-import { FaUser } from "react-icons/fa";
-import { FaRobot } from "react-icons/fa";
-import { FaFileAlt } from "react-icons/fa";
+import { FaUser, FaRobot, FaFileAlt } from "react-icons/fa";
 
 import PageHeader from "../GUIManagement/PageHeader";
 import Footer from "../GUIManagement/Footer";
 import CardButton from "../GUIManagement/CardButton";
 
-import { getCurrentUser } from "../Services/authService";
-import { logoutUser } from "../Services/authService";
+import { getCurrentUser, logoutUser } from "../Services/authService";
 
 import logo from "../assets/logo.jpg";
-
 
 export default function StudentHomePage() {
   const navigate = useNavigate();
 
-  const [student, setStudent] = useState(null);
+  const student = getCurrentUser();
 
-  useEffect(() => {
-    async function loadStudent() {
-      if (!auth.currentUser) return;
-
-      const data = await getStudentProfile(auth.currentUser.uid);
-      setStudent(data);
-    }
-
-    loadStudent();
-  }, []);
-
-  async function handleLogout() {
-    await logoutUser();
+  function handleLogout() {
+    logoutUser();
     navigate("/login");
   }
 

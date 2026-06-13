@@ -4,9 +4,11 @@ import LoginPage from "./UserManagement/LoginPage";
 import SignupPage from "./UserManagement/SignupPage";
 import StudentHomePage from "./UserManagement/StudentHomePage";
 import ProfilePage from "./UserManagement/ProfilePage";
+import AdminDashboardPage from "./AdminManagement/AdminDashboardPage";
+import AdminFormsPage from "./AdminManagement/AdminFormsPage";
+import AdminUsersPage from "./AdminManagement/AdminUsersPage";
+import AdminStatisticsPage from "./AdminManagement/AdminStatisticsPage";
 
-import FormsPage from "./FormsManagement/FormsPage";
-import AdminFormsPage from "./FormsManagement/AdminFormsPage";
 
 import BioBotPage from "./BioBotManagement/BioBotPage";
 
@@ -25,11 +27,15 @@ export default function App() {
 
         <Route path="/profile" element={<ProfilePage />} />
 
-        <Route path="/forms" element={<FormsPage />} />
+        <Route path="/chat" element={<BioBotPage />} />
+
+        <Route path="/admin" element={<AdminDashboardPage />} />
 
         <Route path="/admin/forms" element={<AdminFormsPage />} />
 
-        <Route path="/chat" element={<BioBotPage />} />
+        <Route path="/admin/users" element={<AdminUsersPage />} />
+
+        <Route path="/admin/statistics" element={<AdminStatisticsPage />} />
 
       </Routes>
     </BrowserRouter>

@@ -1,16 +1,23 @@
+/*collect user input from a form, packages it into an object
+then send it to the API service function (registerUser),
+and visually displays the status to the user.
+*/
+
+
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import LabeledInput from "../GUIManagement/LabeledInput";
 import ActionButton from "../GUIManagement/ActionButton";
-
 import { registerUser } from "../Services/authService";
-import logo from "../assets/logo.jpg";
 
+import logo from "../assets/logo.jpg";
 
 export default function SignupPage() {
   const navigate = useNavigate();
 
+  //state management
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,32 +25,30 @@ export default function SignupPage() {
 
   const [error, setError] = useState("");
 
+  //form submission handler
   async function handleSignup(e) {
-    e.preventDefault();
+    e.preventDefault(); //stop the default web browser behavior
 
     try {
-      setError("");
+      setError(""); //clear out any previous error messages 
 
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
+      //build a newUser object out of the current state values
+      const newUser = {
+        firstName,
+        lastName,
         email,
-        password
-      );
-
-      const user = userCredential.user;
-
-      await setDoc(doc(db, "students", user.uid), {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
+        password,
         role: "student",
-        createdAt: new Date(),
-      });
+      };
 
-      navigate("/home");
-    } catch (err) {
-      setError("אירעה שגיאה בהרשמה. בדקו שהאימייל תקין ושהסיסמה מספיק חזקה.");
-      console.log(err.message);
+      //pass the user object to the frontend API service
+      await registerUser(newUser); 
+      navigate("/login");
+    }
+    //handling errors
+     catch (err) {
+      console.log(err);
+      setError(err.message);
     }
   }
 
