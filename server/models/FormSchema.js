@@ -1,5 +1,5 @@
 
-
+//bluePrint of how forms look in the DB 
 const mongoose = require("mongoose");
 
 const FormSchema = new mongoose.Schema(
@@ -26,11 +26,6 @@ const FormSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-    },
-
-    createdBy: {
-      type: String,
-      default: "",
     },
   },
   {

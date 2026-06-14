@@ -1,20 +1,41 @@
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 
 import PageHeader from "../GUIManagement/PageHeader";
 import Footer from "../GUIManagement/Footer";
 
-import { getCurrentUser } from "../Services/authService";
+import { getCurrentUser, getUserById } from "../Services/authService";
 
 export default function ProfilePage() {
   const [sortType, setSortType] = useState("name");
   const [student, setStudent] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadStudent() {
-      if (!auth.currentUser) return;
+      try {
+        const currentUser = getCurrentUser();
 
-      const data = await getStudentProfile(auth.currentUser.uid);
-      setStudent(data);
+        if (!currentUser) {
+          setLoading(false);
+          return;
+        }
+
+        const userId = currentUser._id || currentUser.id;
+
+        if (userId) {
+          const data = await getUserById(userId);
+          setStudent(data);
+        } else {
+          setStudent(currentUser);
+        }
+      } catch (error) {
+        console.error("Failed to load student:", error);
+
+        const currentUser = getCurrentUser();
+        setStudent(currentUser);
+      } finally {
+        setLoading(false);
+      }
     }
 
     loadStudent();
@@ -44,10 +65,22 @@ export default function ProfilePage() {
 
   const gradeRanges = [
     { label: "90-100", count: courses.filter((c) => c.grade >= 90).length },
-    { label: "80-89", count: courses.filter((c) => c.grade >= 80 && c.grade <= 89).length },
-    { label: "70-79", count: courses.filter((c) => c.grade >= 70 && c.grade <= 79).length },
-    { label: "60-69", count: courses.filter((c) => c.grade >= 60 && c.grade <= 69).length },
-    { label: "55-59", count: courses.filter((c) => c.grade >= 55 && c.grade <= 59).length },
+    {
+      label: "80-89",
+      count: courses.filter((c) => c.grade >= 80 && c.grade <= 89).length,
+    },
+    {
+      label: "70-79",
+      count: courses.filter((c) => c.grade >= 70 && c.grade <= 79).length,
+    },
+    {
+      label: "60-69",
+      count: courses.filter((c) => c.grade >= 60 && c.grade <= 69).length,
+    },
+    {
+      label: "55-59",
+      count: courses.filter((c) => c.grade >= 55 && c.grade <= 59).length,
+    },
   ];
 
   return (
@@ -64,27 +97,30 @@ export default function ProfilePage() {
 
               <p>
                 <strong>שם:</strong>{" "}
-                {student
-                  ? `${student.firstName} ${student.lastName}`
-                  : "טוען..."}
+                {loading
+                  ? "טוען..."
+                  : student
+                  ? `${student.firstName || ""} ${student.lastName || ""}`
+                  : "לא נמצא"}
               </p>
 
               <p>
                 <strong>אימייל:</strong>{" "}
-                {student?.email || "טוען..."}
+                {loading ? "טוען..." : student?.email || "לא נמצא"}
               </p>
 
               <p>
                 <strong>תפקיד:</strong>{" "}
-                {student?.role || "student"}
+                {loading ? "טוען..." : student?.role || "student"}
               </p>
 
               <p>
-                <strong>מחלקה:</strong> הנדסת ביוטכנולוגיה
+                <strong>מחלקה:</strong>{" "}
+                {student?.department || "הנדסת ביוטכנולוגיה"}
               </p>
 
               <p>
-                <strong>שנה:</strong> שנה ב׳
+                <strong>שנה:</strong> {student?.year || "שנה ב׳"}
               </p>
             </div>
 

@@ -8,8 +8,7 @@ import AdminDashboardPage from "./AdminManagement/AdminDashboardPage";
 import AdminFormsPage from "./AdminManagement/AdminFormsPage";
 import AdminUsersPage from "./AdminManagement/AdminUsersPage";
 import AdminStatisticsPage from "./AdminManagement/AdminStatisticsPage";
-
-
+import FormsPage from "./FormsManagement/FormsPage";
 import BioBotPage from "./BioBotManagement/BioBotPage";
 
 export default function App() {
@@ -36,6 +35,8 @@ export default function App() {
         <Route path="/admin/users" element={<AdminUsersPage />} />
 
         <Route path="/admin/statistics" element={<AdminStatisticsPage />} />
+
+        <Route path="/forms" element={<FormsPage />} />
 
       </Routes>
     </BrowserRouter>

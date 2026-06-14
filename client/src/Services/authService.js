@@ -1,13 +1,11 @@
-
-/*Authentication Service Layer:
-bridge between user interface,
-and backend server database
+/* Authentication Service Layer:
+   bridge between user interface
+   and backend server database
 */
 
-//base URL:
 const API_URL = "http://localhost:3000/api/users";
 
-//Registers a new user account with the backend server
+// Register new user
 export async function registerUser(user) {
   const response = await fetch(`${API_URL}/register`, {
     method: "POST",
@@ -19,13 +17,13 @@ export async function registerUser(user) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message);
+    throw new Error(error.message || "Register failed");
   }
 
   return response.json();
 }
 
-//Authenticates user credentials with the backend
+// Login user
 export async function loginUser(email, password) {
   const response = await fetch(`${API_URL}/login`, {
     method: "POST",
@@ -37,23 +35,24 @@ export async function loginUser(email, password) {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message);
+    throw new Error(error.message || "Login failed");
   }
 
-  const user = await response.json();
+  const data = await response.json();
 
-  // Persist the user session in the browser memory
+  const user = data.user ? data.user : data;
+
   localStorage.setItem("user", JSON.stringify(user));
 
   return user;
 }
 
-//Terminates the active user session by clearing authentication tokens
+// Logout user
 export function logoutUser() {
   localStorage.removeItem("user");
 }
 
-//Retrieves and reconstructs the active user session data
+// Get current logged-in user
 export function getCurrentUser() {
   const user = localStorage.getItem("user");
 
@@ -64,11 +63,55 @@ export function getCurrentUser() {
   return JSON.parse(user);
 }
 
+// Get all users from DB
 export async function getUsers() {
   const response = await fetch(API_URL);
 
   if (!response.ok) {
     throw new Error("Failed to load users");
+  }
+
+  return response.json();
+}
+
+// Get one user by ID from DB
+export async function getUserById(id) {
+  const response = await fetch(`${API_URL}/${id}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to load user");
+  }
+
+  return response.json();
+}
+
+// Update user by ID
+export async function updateUser(id, updatedData) {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedData),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to update user");
+  }
+
+  return response.json();
+}
+
+// Delete user by ID
+export async function deleteUser(id) {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to delete user");
   }
 
   return response.json();
