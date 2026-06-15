@@ -135,4 +135,46 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// Update form information (text fields only, no file changes)
+router.put("/:id", async (req, res) => {
+  try {
+    const { title, description, category } = req.body;
+
+    // Validate that required tracking text isn't cleared out by mistake
+    if (title === "" || description === "") {
+      return res.status(400).json({
+        message: "Title and description cannot be empty",
+      });
+    }
+
+    // Find the form and update only the text fields provided in the request body
+    const updatedForm = await Form.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          ...(title && { title: title.trim() }),
+          ...(description && { description: description.trim() }),
+          ...(category !== undefined && { category: category.trim() }),
+        },
+      },
+      { new: true, runValidators: true } // 'new: true' returns the updated document back to the client
+    );
+
+    if (!updatedForm) {
+      return res.status(404).json({
+        message: "Form not found",
+      });
+    }
+
+    res.json({
+      message: "Form information updated successfully",
+      form: updatedForm,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed to update form information",
+      error: err.message,
+    });
+  }
+});
 module.exports = router;

@@ -5,6 +5,7 @@ export default function SearchBar(props) {
       placeholder={props.placeholder}
       value={props.value}
       onChange={props.onChange}
+      onKeyUp={props.onKeyUp} //to support enter key to search :) 
       className="
         flex-1
         border

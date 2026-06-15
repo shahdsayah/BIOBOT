@@ -24,20 +24,23 @@ export async function createForm(formData) {
   return response.json();
 }
 
-export async function updateForm(id, form) {
+// Update only the form's metadata (title, description, category)
+export async function updateForm(id, updatedFields) {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json", // Telling the backend we are sending JSON data
     },
-    body: JSON.stringify(form),
+    body: JSON.stringify(updatedFields), // Sends { title, description, category }
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error("Failed to update form");
+    throw new Error(data.message || "Failed to update form information");
   }
 
-  return response.json();
+  return data;
 }
 
 export async function deleteForm(id) {
