@@ -1,38 +1,54 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import LabeledInput from "../GUIManagement/LabeledInput";
 import ActionButton from "../GUIManagement/ActionButton";
+import ArithmeticCaptcha from "../GUIManagement/ArithmeticCaptcha";
 
 import { loginUser } from "../Services/authService";
 import logo from "../assets/logo.jpg";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const captchaRef = useRef(null);
 
-  //state hooks to track what the user is typing into the Email and Password fields.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState("");
+
   async function handleLogin(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    setError("");
+    try {
+      setError("");
 
-    const user = await loginUser(email, password);
+      const captchaIsValid = captchaRef.current.validateCaptcha();
 
-    if (user.role === "admin") {
-      navigate("/admin");
-    } else {
-      navigate("/home");
+      if (!captchaIsValid) {
+        return;
+      }
+
+      if (!email.trim() || !password.trim()) {
+        setError("יש להזין אימייל וסיסמה.");
+        return;
+      }
+
+      const user = await loginUser(email.trim().toLowerCase(), password);
+
+      captchaRef.current.refreshCaptcha();
+
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/home");
+      }
+    } catch (err) {
+      console.log(err);
+      setError(err.message || "Login failed");
+      captchaRef.current.refreshCaptcha();
     }
-  } catch (err) {
-    console.log(err);
-    setError(err.message);
   }
-}
 
   return (
     <div
@@ -66,7 +82,8 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
 
-        
+            <ArithmeticCaptcha ref={captchaRef} />
+
             {error && (
               <p className="text-red-500 text-sm mb-4">
                 {error}

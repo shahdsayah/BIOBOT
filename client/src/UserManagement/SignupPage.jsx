@@ -1,23 +1,18 @@
-/*collect user input from a form, packages it into an object
-then send it to the API service function (registerUser),
-and visually displays the status to the user.
-*/
-
-
-
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import LabeledInput from "../GUIManagement/LabeledInput";
 import ActionButton from "../GUIManagement/ActionButton";
+import ArithmeticCaptcha from "../GUIManagement/ArithmeticCaptcha";
+
 import { registerUser } from "../Services/authService";
 
 import logo from "../assets/logo.jpg";
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const captchaRef = useRef(null);
 
-  //state management
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -25,30 +20,40 @@ export default function SignupPage() {
 
   const [error, setError] = useState("");
 
-  //form submission handler
   async function handleSignup(e) {
-    e.preventDefault(); //stop the default web browser behavior
+    e.preventDefault();
 
     try {
-      setError(""); //clear out any previous error messages 
+      setError("");
 
-      //build a newUser object out of the current state values
+      const captchaIsValid = captchaRef.current.validateCaptcha();
+
+      if (!captchaIsValid) {
+        return;
+      }
+
+      if (!firstName.trim() || !lastName.trim() || !email.trim() || !password.trim()) {
+        setError("יש למלא את כל השדות.");
+        return;
+      }
+
       const newUser = {
-        firstName,
-        lastName,
-        email,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim().toLowerCase(),
         password,
         role: "student",
       };
 
-      //pass the user object to the frontend API service
-      await registerUser(newUser); 
+      await registerUser(newUser);
+
+      captchaRef.current.refreshCaptcha();
+
       navigate("/login");
-    }
-    //handling errors
-     catch (err) {
+    } catch (err) {
       console.log(err);
-      setError(err.message);
+      setError(err.message || "Registration failed");
+      captchaRef.current.refreshCaptcha();
     }
   }
 
@@ -99,6 +104,8 @@ export default function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+
+            <ArithmeticCaptcha ref={captchaRef} />
 
             {error && (
               <p className="text-red-500 text-sm mb-4">
