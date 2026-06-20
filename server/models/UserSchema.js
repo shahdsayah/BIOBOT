@@ -37,6 +37,26 @@ const UserSchema = new mongoose.Schema( //defining the blueprint of how the data
       type: String,
       default: "",
     },
+
+    schedule: [
+      {
+        day: String,
+        startTime: String,
+        endTime: String,
+        courseName: String,
+        room: String,
+      },
+    ],
+
+    completedCourses: [
+      {
+        name: String,
+        credits: Number,
+        grade: Number,
+        semester: String,
+        yearOfStudy: Number,
+      },
+    ],
   },
   {
     timestamps: true, //date tracking

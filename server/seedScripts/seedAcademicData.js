@@ -1,15 +1,16 @@
-
 require("dotenv").config();
 
 const mongoose = require("mongoose");
 
-const Course = require("./models/CourseSchema");
-const User = require("./models/UserSchema");
-const academicTemplates = require("./data/academicTemplates");
+const Course = require("../models/CourseSchema");
+const User = require("../models/UserSchema");
+const academicTemplates = require("../data/academicTemplates");
+const randomGrade = require("../utils/randomGrade");
 
-// EDIT THIS to match the email of the student account you want to demo with
-// (must already exist — sign up that account first if it doesn't)
-const DEMO_STUDENT_EMAIL = "shahd@test.com";
+// Set to true to overwrite data on students who already have a
+// schedule/completedCourses (e.g. anyone auto-assigned at signup).
+// Leave false to only backfill accounts that currently have nothing.
+const FORCE_REASSIGN = false;
 
 // Real mandatory ("חובה") course catalog for Biotechnology Engineering,
 // read directly from the department's official study program
@@ -102,32 +103,41 @@ async function seed() {
     }
     console.log(`Seeded ${courses.length} courses into the catalog`);
 
-    // Reuse the year-ג template from academicTemplates.js as the single
-    // source of truth, instead of duplicating schedule/completedCourses
-    // data in two places.
-    const demoTemplate = academicTemplates.find((t) => t.year === "ג");
+    // Backfill EVERY existing student, not just one hardcoded account.
+    const students = await User.find({ role: "student" });
 
-    const student = await User.findOneAndUpdate(
-      { email: DEMO_STUDENT_EMAIL },
-      {
-        $set: {
-          year: demoTemplate.year,
-          schedule: demoTemplate.schedule,
-          completedCourses: demoTemplate.completedCourses,
-        },
-      },
-      { new: true }
-    );
+    let updated = 0;
+    let skipped = 0;
 
-    if (!student) {
-      console.log(
-        `No user found with email "${DEMO_STUDENT_EMAIL}". Sign up that account first, or edit DEMO_STUDENT_EMAIL at the top of this file.`
-      );
-    } else {
-      console.log(
-        `Updated schedule + completedCourses for ${student.firstName} ${student.lastName}`
-      );
+    for (const student of students) {
+      const alreadyHasData =
+        (student.schedule && student.schedule.length > 0) ||
+        (student.completedCourses && student.completedCourses.length > 0);
+
+      if (alreadyHasData && !FORCE_REASSIGN) {
+        skipped++;
+        continue;
+      }
+
+      const template =
+        academicTemplates[Math.floor(Math.random() * academicTemplates.length)];
+
+      student.year = template.year;
+      student.schedule = template.schedule;
+      // Random grade per course, generated fresh for each student —
+      // not the same fixed numbers every time the template is used.
+      student.completedCourses = template.completedCourses.map((course) => ({
+        ...course,
+        grade: randomGrade(),
+      }));
+
+      await student.save();
+      updated++;
     }
+
+    console.log(
+      `Updated ${updated} student account(s). Skipped ${skipped} that already had data (set FORCE_REASSIGN = true to overwrite them too).`
+    );
 
     await mongoose.connection.close();
     process.exit(0);
