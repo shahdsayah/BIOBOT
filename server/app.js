@@ -12,13 +12,13 @@ const app = express(); //create the application instance
 
 app.use(cors({
   origin: function (origin, callback) {
-    const allowed = [
-      "http://localhost:5173",
-      "https://biobot-eolprv63r-biobot.vercel.app",
-      process.env.FRONTEND_URL,
-    ].filter(Boolean);
+    if (!origin) return callback(null, true);
 
-    if (!origin || allowed.includes(origin)) {
+    const isLocalhost = origin === "http://localhost:5173";
+    const isVercel = /^https:\/\/biobot.*\.vercel\.app$/.test(origin);
+    const isCustomDomain = origin === process.env.FRONTEND_URL;
+
+    if (isLocalhost || isVercel || isCustomDomain) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));

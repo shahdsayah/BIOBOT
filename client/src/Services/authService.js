@@ -5,19 +5,28 @@
 
 const API_URL = `${import.meta.env.VITE_API_URL}/api/users`;
 
+// Safely parse JSON, return null if body is empty
+async function safeJson(response) {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
 // Register new user
 export async function registerUser(user) {
-  const response = await fetch(`${API_URL}/register`, {
+  const response = await apiFetch(`${API_URL}/register`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(user),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Register failed");
+    const error = await safeJson(response);
+    throw new Error(error?.message || "Register failed");
   }
 
   return response.json();
@@ -25,15 +34,15 @@ export async function registerUser(user) {
 
 // Login user
 export async function loginUser(email, password) {
-  const response = await fetch(`${API_URL}/login`, {
+  const response = await apiFetch(`${API_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Login failed");
+    const error = await safeJson(response);
+    throw new Error(error?.message || "Login failed");
   }
 
   const data = await response.json();
