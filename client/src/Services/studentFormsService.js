@@ -1,6 +1,6 @@
 import { getToken, apiFetch } from "./authService";
 
-const SERVER_URL = "http://localhost:3000";
+const SERVER_URL = import.meta.env.VITE_API_URL;
 const FORMS_API_URL = `${SERVER_URL}/api/forms`;
 
 // Get all forms uploaded by admin

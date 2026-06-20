@@ -3,7 +3,7 @@
    and backend server database
 */
 
-const API_URL = "http://localhost:3000/api/users";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/users`;
 
 // Register new user
 export async function registerUser(user) {

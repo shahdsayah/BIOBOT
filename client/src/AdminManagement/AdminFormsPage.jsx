@@ -166,7 +166,7 @@ export default function AdminFormsPage() {
                               text="פתח"
                               onClick={() =>
                                 window.open(
-                                  `http://localhost:3000${form.fileUrl}`,
+                                  `${import.meta.env.VITE_API_URL}${form.fileUrl}`,
                                   "_blank"
                                 )
                               }

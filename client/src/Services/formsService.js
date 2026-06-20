@@ -1,6 +1,6 @@
 import { getToken, apiFetch } from "./authService";
 
-const API_URL = "http://localhost:3000/api/forms";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/forms`;
 
 function authOnlyHeader() {
   const token = getToken();
