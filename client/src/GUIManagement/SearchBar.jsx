@@ -5,17 +5,8 @@ export default function SearchBar(props) {
       placeholder={props.placeholder}
       value={props.value}
       onChange={props.onChange}
-      onKeyUp={props.onKeyUp} //to support enter key to search :) 
-      className="
-        flex-1
-        border
-        border-slate-300
-        rounded-xl
-        px-4
-        py-3
-        outline-none
-        focus:border-[oklch(48.8%_0.243_264.376)]
-      "
+      onKeyUp={props.onKeyUp}
+      className="flex-1 border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400 rounded-xl px-4 py-3 outline-none focus:border-brand"
     />
   );
 }

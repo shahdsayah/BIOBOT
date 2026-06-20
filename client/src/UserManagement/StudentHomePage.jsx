@@ -21,7 +21,7 @@ export default function StudentHomePage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 flex flex-col">
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader
         title="עמוד הבית"
         buttonText="התנתק"
@@ -35,11 +35,11 @@ export default function StudentHomePage() {
           className="w-36 h-36 rounded-full bg-white object-contain p-3 shadow-lg mb-6"
         />
 
-        <h1 className="text-4xl font-extrabold text-[oklch(48.8%_0.243_264.376)] mb-3 text-center">
+        <h1 className="text-4xl font-extrabold text-brand mb-3 text-center">
           שלום {student?.firstName || "סטודנט"} 👋
         </h1>
 
-        <p className="text-slate-600 text-lg mb-12 text-center">
+        <p className="text-slate-600 dark:text-slate-400 text-lg mb-12 text-center">
           ברוכים הבאים למערכת ביו-בוט
         </p>
 

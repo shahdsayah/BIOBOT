@@ -60,15 +60,15 @@ export default function SignupPage() {
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-slate-50 flex items-center justify-center"
+      className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4"
     >
-      <div className="w-[1000px] min-h-[600px] bg-white rounded-2xl shadow-2xl overflow-hidden flex">
-        <section className="w-3/5 p-14 flex flex-col justify-center">
-          <h2 className="text-4xl font-bold text-[oklch(48.8%_0.243_264.376)] mb-3">
+      <div className="w-full max-w-[1000px] min-h-[600px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col sm:flex-row">
+        <section className="w-full sm:w-3/5 p-8 sm:p-14 flex flex-col justify-center">
+          <h2 className="text-4xl font-bold text-brand mb-3">
             הרשמה
           </h2>
 
-          <p className="text-slate-600 mb-8">
+          <p className="text-slate-600 dark:text-slate-400 mb-8">
             צרו חשבון חדש במערכת ביו־בוט
           </p>
 
@@ -118,14 +118,14 @@ export default function SignupPage() {
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="block mx-auto mt-5 text-sm text-slate-500 hover:text-[oklch(48.8%_0.243_264.376)]"
+              className="block mx-auto mt-5 text-sm text-slate-500 dark:text-slate-400 hover:text-brand"
             >
               כבר יש לך חשבון? התחברות
             </button>
           </form>
         </section>
 
-        <section className="w-2/5 bg-[oklch(48.8%_0.243_264.376)] text-white flex flex-col items-center justify-center p-12">
+        <section className="hidden sm:flex w-2/5 bg-brand text-white flex-col items-center justify-center p-12">
           <img
             src={logo}
             alt="BIOBOT Logo"

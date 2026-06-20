@@ -115,23 +115,23 @@ export default function AdminUsersPage() {
     return (
       <div
         key={user._id}
-        className="border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-4"
+        className="border border-slate-200 dark:border-slate-600 rounded-xl p-4 flex items-center justify-between gap-4"
       >
         <div>
-          <h3 className="font-bold text-slate-800">
+          <h3 className="font-bold text-slate-800 dark:text-slate-100">
             {user.firstName} {user.lastName}
           </h3>
 
-          <p className="text-sm text-slate-500">{user.email}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
 
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
             נוצר בתאריך:{" "}
             {user.createdAt
               ? new Date(user.createdAt).toLocaleDateString("he-IL")
               : "לא זמין"}
           </p>
 
-          <span className="inline-flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full text-sm mt-3">
+          <span className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-700 dark:text-slate-300 px-3 py-1 rounded-full text-sm mt-3">
             {icon}
             {roleLabel}
           </span>
@@ -141,7 +141,7 @@ export default function AdminUsersPage() {
           <button
             type="button"
             onClick={() => handleChangeRole(user)}
-            className="bg-[oklch(48.8%_0.243_264.376)] text-white px-4 py-2 rounded-md font-bold hover:opacity-90 transition"
+            className="bg-brand text-white px-4 py-2 rounded-md font-bold hover:opacity-90 transition"
           >
             שינוי הרשאה
           </button>
@@ -159,29 +159,29 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 flex flex-col">
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader title="ניהול משתמשים" buttonText="לוח ניהול" to="/admin" />
 
       <main className="flex-1 p-8">
         <div className="max-w-[1250px] mx-auto">
           {loading && (
-            <p className="text-slate-500 text-center">טוען משתמשים...</p>
+            <p className="text-slate-500 dark:text-slate-400 text-center">טוען משתמשים...</p>
           )}
 
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
           {!loading && (
             <div className="grid grid-cols-2 gap-8">
-              <section className="bg-white rounded-2xl shadow-2xl p-8">
+              <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <FaUserGraduate className="text-4xl text-[oklch(48.8%_0.243_264.376)]" />
+                  <FaUserGraduate className="text-4xl text-brand" />
 
                   <div>
-                    <h1 className="text-3xl font-bold text-[oklch(48.8%_0.243_264.376)]">
+                    <h1 className="text-3xl font-bold text-brand">
                       סטודנטים
                     </h1>
 
-                    <p className="text-slate-500">
+                    <p className="text-slate-500 dark:text-slate-400">
                       חיפוש ומיון משתמשים מסוג סטודנט
                     </p>
                   </div>
@@ -197,7 +197,7 @@ export default function AdminUsersPage() {
                   <select
                     value={sortType}
                     onChange={(e) => setSortType(e.target.value)}
-                    className="border border-slate-300 rounded-xl px-4 py-2 outline-none"
+                    className="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-xl px-4 py-2 outline-none"
                   >
                     <option value="newest">מהחדש לישן</option>
                     <option value="oldest">מהישן לחדש</option>
@@ -207,29 +207,25 @@ export default function AdminUsersPage() {
 
                 <div className="space-y-4">
                   {students.length === 0 ? (
-                    <p className="text-slate-500">לא נמצאו סטודנטים.</p>
+                    <p className="text-slate-500 dark:text-slate-400">לא נמצאו סטודנטים.</p>
                   ) : (
                     students.map((user) =>
-                      renderUserCard(
-                        user,
-                        <FaUserGraduate />,
-                        "student"
-                      )
+                      renderUserCard(user, <FaUserGraduate />, "student")
                     )
                   )}
                 </div>
               </section>
 
-              <section className="bg-white rounded-2xl shadow-2xl p-8">
+              <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <FaUsers className="text-4xl text-[oklch(48.8%_0.243_264.376)]" />
+                  <FaUsers className="text-4xl text-brand" />
 
                   <div>
-                    <h1 className="text-3xl font-bold text-[oklch(48.8%_0.243_264.376)]">
+                    <h1 className="text-3xl font-bold text-brand">
                       מנהלים
                     </h1>
 
-                    <p className="text-slate-500">
+                    <p className="text-slate-500 dark:text-slate-400">
                       משתמשים בעלי הרשאות ניהול
                     </p>
                   </div>
@@ -237,7 +233,7 @@ export default function AdminUsersPage() {
 
                 <div className="space-y-4">
                   {admins.length === 0 ? (
-                    <p className="text-slate-500">אין מנהלים במערכת.</p>
+                    <p className="text-slate-500 dark:text-slate-400">אין מנהלים במערכת.</p>
                   ) : (
                     admins.map((user) =>
                       renderUserCard(user, <FaUserShield />, "admin")

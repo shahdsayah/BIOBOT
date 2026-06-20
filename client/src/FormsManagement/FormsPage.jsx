@@ -59,11 +59,11 @@ export default function FormsPage() {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 flex flex-col">
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader title="נהלים וטפסים" buttonText="דף הבית" to="/home" />
 
       <main className="flex-1 flex justify-center mt-10">
-        <div className="w-[760px] bg-white rounded-2xl shadow-2xl p-8">
+        <div className="w-[760px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
           
           {/* Search Bar Container */}
           <div className="flex gap-4 mb-8">
@@ -82,10 +82,10 @@ export default function FormsPage() {
           </div>
 
           {/* Status Messages */}
-          {loading && <p className="text-center text-slate-500">טוען טפסים...</p>}
+          {loading && <p className="text-center text-slate-500 dark:text-slate-400">טוען טפסים...</p>}
           {error && <p className="text-center text-red-500">{error}</p>}
           {!loading && !error && filteredForms.length === 0 && (
-            <p className="text-center text-slate-500">לא נמצאו טפסים תואמים.</p>
+            <p className="text-center text-slate-500 dark:text-slate-400">לא נמצאו טפסים תואמים.</p>
           )}
 
           {/* Dynamic Forms Grid Grid */}

@@ -125,23 +125,23 @@ export default function AdminFormsPage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 flex flex-col">
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader title="ניהול טפסים" buttonText="לוח ניהול" to="/admin" />
 
       <main className="flex-1 py-10 px-8">
         <div className="max-w-[1250px] mx-auto grid grid-cols-2 gap-8">
-          <section className="bg-white rounded-2xl shadow-2xl p-8 order-1">
-            <h2 className="text-3xl font-bold text-[oklch(48.8%_0.243_264.376)] mb-6">
+          <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 order-1">
+            <h2 className="text-3xl font-bold text-brand mb-6">
               טפסים קיימים
             </h2>
 
             {forms.length === 0 ? (
-              <p className="text-slate-500">אין טפסים במערכת.</p>
+              <p className="text-slate-500 dark:text-slate-400">אין טפסים במערכת.</p>
             ) : (
               <div className="space-y-8">
                 {Object.entries(groupedForms).map(([categoryName, categoryForms]) => (
                   <div key={categoryName}>
-                    <h3 className="text-xl font-bold text-slate-800 border-b pb-2 mb-4">
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-600 pb-2 mb-4">
                       {categoryName}
                     </h3>
 
@@ -149,14 +149,14 @@ export default function AdminFormsPage() {
                       {categoryForms.map((form) => (
                         <div
                           key={form._id}
-                          className="border border-slate-200 rounded-xl p-4 flex items-center justify-between gap-4"
+                          className="border border-slate-200 dark:border-slate-600 rounded-xl p-4 flex items-center justify-between gap-4"
                         >
                           <div>
-                            <h4 className="font-bold text-slate-800">
+                            <h4 className="font-bold text-slate-800 dark:text-slate-100">
                               {form.title}
                             </h4>
 
-                            <p className="text-sm text-slate-500 mt-1">
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                               {form.description}
                             </p>
                           </div>
@@ -194,12 +194,12 @@ export default function AdminFormsPage() {
             )}
           </section>
 
-          <section className="bg-white rounded-2xl shadow-2xl p-8 order-2">
-            <h2 className="text-3xl font-bold text-[oklch(48.8%_0.243_264.376)] mb-3">
+          <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 order-2">
+            <h2 className="text-3xl font-bold text-brand mb-3">
               {editingId ? "עדכון טופס" : "הוספת טופס חדש"}
             </h2>
 
-            <p className="text-slate-500 mb-8">
+            <p className="text-slate-500 dark:text-slate-400 mb-8">
               כאן ניתן להעלות קובצי PDF או Word למערכת
             </p>
 
@@ -229,7 +229,7 @@ export default function AdminFormsPage() {
               />
 
               <div className="w-full mb-5">
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   העלאת קובץ
                 </label>
 
@@ -237,11 +237,11 @@ export default function AdminFormsPage() {
                   type="file"
                   accept=".pdf,.doc,.docx"
                   onChange={(e) => setFile(e.target.files[0])}
-                  className="w-full border-b-2 border-slate-300 px-2 py-3 outline-none"
+                  className="w-full border-b-2 border-slate-300 dark:border-slate-600 dark:text-slate-300 bg-transparent px-2 py-3 outline-none"
                 />
 
                 {editingId && (
-                  <p className="text-xs text-slate-500 mt-2">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
                     אם לא תבחר קובץ חדש, הקובץ הקיים יישאר.
                   </p>
                 )}
@@ -262,7 +262,7 @@ export default function AdminFormsPage() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="block mx-auto mt-4 text-sm text-slate-500 hover:text-[oklch(48.8%_0.243_264.376)]"
+                  className="block mx-auto mt-4 text-sm text-slate-500 dark:text-slate-400 hover:text-brand"
                 >
                   ביטול עריכה
                 </button>

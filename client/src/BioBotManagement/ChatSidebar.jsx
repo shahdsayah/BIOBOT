@@ -9,10 +9,10 @@ export default function ChatSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-white border-l border-slate-200 p-4">
+    <aside className="w-64 bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 p-4">
       <PrimarySmallButton text="שיחה חדשה" />
 
-      <h3 className="text-sm font-bold text-slate-500 mt-6 mb-3">
+      <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-6 mb-3">
         היסטוריית שיחות
       </h3>
 
@@ -20,16 +20,7 @@ export default function ChatSidebar() {
         {chats.map((chat) => (
           <button
             key={chat}
-            className="
-              w-full
-              text-right
-              px-3
-              py-2
-              rounded-lg
-              text-slate-700
-              hover:bg-slate-100
-              transition
-            "
+            className="w-full text-right px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
           >
             {chat}
           </button>
