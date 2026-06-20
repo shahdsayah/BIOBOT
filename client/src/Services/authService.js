@@ -71,9 +71,23 @@ export function authHeaders(extra = {}) {
   };
 }
 
+// Drop-in replacement for fetch that handles expired/invalid tokens globally
+export async function apiFetch(url, options = {}) {
+  const response = await fetch(url, options);
+
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+    return;
+  }
+
+  return response;
+}
+
 // Get all users from DB
 export async function getUsers() {
-  const response = await fetch(API_URL, { headers: authHeaders() });
+  const response = await apiFetch(API_URL, { headers: authHeaders() });
 
   if (!response.ok) {
     throw new Error("Failed to load users");
@@ -84,7 +98,7 @@ export async function getUsers() {
 
 // Get one user by ID from DB
 export async function getUserById(id) {
-  const response = await fetch(`${API_URL}/${id}`, { headers: authHeaders() });
+  const response = await apiFetch(`${API_URL}/${id}`, { headers: authHeaders() });
 
   if (!response.ok) {
     throw new Error("Failed to load user");
@@ -95,7 +109,7 @@ export async function getUserById(id) {
 
 // Update user by ID
 export async function updateUser(id, updatedData) {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const response = await apiFetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: authHeaders(),
     body: JSON.stringify(updatedData),
@@ -111,7 +125,7 @@ export async function updateUser(id, updatedData) {
 
 // Delete user by ID
 export async function deleteUser(id) {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const response = await apiFetch(`${API_URL}/${id}`, {
     method: "DELETE",
     headers: authHeaders(),
   });

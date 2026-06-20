@@ -1,4 +1,4 @@
-import { getToken } from "./authService";
+import { getToken, apiFetch } from "./authService";
 
 const SERVER_URL = "http://localhost:3000";
 const FORMS_API_URL = `${SERVER_URL}/api/forms`;
@@ -6,7 +6,7 @@ const FORMS_API_URL = `${SERVER_URL}/api/forms`;
 // Get all forms uploaded by admin
 export async function getStudentForms() {
   const token = getToken();
-  const response = await fetch(FORMS_API_URL, {
+  const response = await apiFetch(FORMS_API_URL, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 

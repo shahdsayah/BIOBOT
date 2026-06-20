@@ -1,4 +1,4 @@
-import { getToken } from "./authService";
+import { getToken, apiFetch } from "./authService";
 
 const API_URL = "http://localhost:3000/api/forms";
 
@@ -8,7 +8,7 @@ function authHeader() {
 }
 
 export async function getForms() {
-  const response = await fetch(API_URL, {
+  const response = await apiFetch(API_URL, {
     headers: authHeader(),
   });
 
@@ -20,7 +20,7 @@ export async function getForms() {
 }
 
 export async function createForm(formData) {
-  const response = await fetch(API_URL, {
+  const response = await apiFetch(API_URL, {
     method: "POST",
     headers: authHeader(),
     body: formData,
@@ -34,7 +34,7 @@ export async function createForm(formData) {
 }
 
 export async function updateForm(id, updatedFields) {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const response = await apiFetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json", ...authHeader() },
     body: JSON.stringify(updatedFields),
@@ -50,7 +50,7 @@ export async function updateForm(id, updatedFields) {
 }
 
 export async function deleteForm(id) {
-  const response = await fetch(`${API_URL}/${id}`, {
+  const response = await apiFetch(`${API_URL}/${id}`, {
     method: "DELETE",
     headers: authHeader(),
   });
