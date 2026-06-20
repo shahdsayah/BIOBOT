@@ -1,8 +1,16 @@
+import { getToken } from "./authService";
 
 const API_URL = "http://localhost:3000/api/forms";
 
+function authHeader() {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export async function getForms() {
-  const response = await fetch(API_URL);
+  const response = await fetch(API_URL, {
+    headers: authHeader(),
+  });
 
   if (!response.ok) {
     throw new Error("Failed to load forms");
@@ -14,6 +22,7 @@ export async function getForms() {
 export async function createForm(formData) {
   const response = await fetch(API_URL, {
     method: "POST",
+    headers: authHeader(),
     body: formData,
   });
 
@@ -24,14 +33,11 @@ export async function createForm(formData) {
   return response.json();
 }
 
-// Update only the form's metadata (title, description, category)
 export async function updateForm(id, updatedFields) {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json", // Telling the backend we are sending JSON data
-    },
-    body: JSON.stringify(updatedFields), // Sends { title, description, category }
+    headers: { "Content-Type": "application/json", ...authHeader() },
+    body: JSON.stringify(updatedFields),
   });
 
   const data = await response.json();
@@ -46,6 +52,7 @@ export async function updateForm(id, updatedFields) {
 export async function deleteForm(id) {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
+    headers: authHeader(),
   });
 
   if (!response.ok) {

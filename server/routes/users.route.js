@@ -2,30 +2,29 @@
 
 const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/UserSchema");
-//status codes: (400 - Bad Request) , (201 - Created), 
+const { requireAuth, requireAdmin } = require("../middleware/auth");
+//status codes: (400 - Bad Request) , (201 - Created),
 
 //CREATE user -register
 router.post("/register", async (req, res) => {
-  //checking for an existing user:
   try {
-    const existingUser = await User.findOne({ 
-      email: req.body.email,
-    });
+    const existingUser = await User.findOne({ email: req.body.email });
 
-    //Handling Duplicates (if the email exsits in the db)
     if (existingUser) {
-      return res.status(400).json({
-        message: "Email already exists",
-      });
+      return res.status(400).json({ message: "Email already exists" });
     }
 
-    //Creating the New User:
-    const user = await User.create(req.body);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-    res.status(201).json(user);
-  } catch (err) { //catch unexpected error
+    const user = await User.create({ ...req.body, password: hashedPassword });
+
+    const { password, ...userWithoutPassword } = user.toObject();
+    res.status(201).json(userWithoutPassword);
+  } catch (err) {
     res.status(500).json(err);
   }
 });
@@ -33,18 +32,26 @@ router.post("/register", async (req, res) => {
 //CREATE user - login
 router.post("/login", async (req, res) => {
   try {
-    const user = await User.findOne({
-      email: req.body.email,
-      password: req.body.password,
-    });
+    const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
-      return res.status(401).json({
-        message: "Invalid credentials",
-      });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    res.json(user);
+    const passwordMatch = await bcrypt.compare(req.body.password, user.password);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    const { password, ...userWithoutPassword } = user.toObject();
+    res.json({ token, user: userWithoutPassword });
   } catch (err) {
     res.status(500).json(err);
   }
@@ -53,14 +60,12 @@ router.post("/login", async (req, res) => {
 
 
 //GET User
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireAuth, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.json(user);
@@ -71,15 +76,13 @@ router.get("/:id", async (req, res) => {
 
 
 //UPDATE User
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireAuth, async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       req.body,
-      {
-        new: true,
-      }
-    );
+      { new: true }
+    ).select("-password");
 
     res.json(updatedUser);
   } catch (err) {
@@ -89,7 +92,7 @@ router.put("/:id", async (req, res) => {
 
 
 //DELETE User
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAdmin, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
 
@@ -103,9 +106,9 @@ router.delete("/:id", async (req, res) => {
 
 
 //Get All Users
-router.get("/", async (req, res) => {
+router.get("/", requireAdmin, async (req, res) => {
   try {
-    const users = await User.find().sort({ createdAt: -1 });
+    const users = await User.find().select("-password").sort({ createdAt: -1 });
 
     res.json(users);
   } catch (err) {

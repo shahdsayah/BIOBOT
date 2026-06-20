@@ -10,6 +10,8 @@ import AdminUsersPage from "./AdminManagement/AdminUsersPage";
 import AdminStatisticsPage from "./AdminManagement/AdminStatisticsPage";
 import FormsPage from "./FormsManagement/FormsPage";
 import BioBotPage from "./BioBotManagement/BioBotPage";
+import ProtectedRoute from "./UserManagement/ProtectedRoute";
+import AdminRoute from "./UserManagement/AdminRoute";
 
 export default function App() {
   return (
@@ -22,21 +24,21 @@ export default function App() {
 
         <Route path="/signup" element={<SignupPage />} />
 
-        <Route path="/home" element={<StudentHomePage />} />
+        <Route path="/home" element={<ProtectedRoute><StudentHomePage /></ProtectedRoute>} />
 
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
-        <Route path="/chat" element={<BioBotPage />} />
+        <Route path="/chat" element={<ProtectedRoute><BioBotPage /></ProtectedRoute>} />
 
-        <Route path="/admin" element={<AdminDashboardPage />} />
+        <Route path="/forms" element={<ProtectedRoute><FormsPage /></ProtectedRoute>} />
 
-        <Route path="/admin/forms" element={<AdminFormsPage />} />
+        <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
 
-        <Route path="/admin/users" element={<AdminUsersPage />} />
+        <Route path="/admin/forms" element={<AdminRoute><AdminFormsPage /></AdminRoute>} />
 
-        <Route path="/admin/statistics" element={<AdminStatisticsPage />} />
+        <Route path="/admin/users" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
 
-        <Route path="/forms" element={<FormsPage />} />
+        <Route path="/admin/statistics" element={<AdminRoute><AdminStatisticsPage /></AdminRoute>} />
 
       </Routes>
     </BrowserRouter>

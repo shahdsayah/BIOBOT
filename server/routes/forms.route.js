@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 const Form = require("../models/FormSchema");
+const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Upload new form by admin
-router.post("/", upload.single("file"), async (req, res) => {
+router.post("/", requireAdmin, upload.single("file"), async (req, res) => {
   try {
     const { title, description, category, createdBy } = req.body;
 
@@ -69,7 +70,7 @@ router.post("/", upload.single("file"), async (req, res) => {
 });
 
 // Get all forms for student/admin
-router.get("/", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   try {
     const forms = await Form.find().sort({ createdAt: -1 });
 
@@ -83,7 +84,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get one form by ID
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireAuth, async (req, res) => {
   try {
     const form = await Form.findById(req.params.id);
 
@@ -103,7 +104,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Delete form by admin
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAdmin, async (req, res) => {
   try {
     const form = await Form.findById(req.params.id);
 
@@ -136,7 +137,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // Update form information (text fields only, no file changes)
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireAdmin, async (req, res) => {
   try {
     const { title, description, category } = req.body;
 

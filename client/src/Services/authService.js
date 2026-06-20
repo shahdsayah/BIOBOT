@@ -27,9 +27,7 @@ export async function registerUser(user) {
 export async function loginUser(email, password) {
   const response = await fetch(`${API_URL}/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
 
@@ -40,32 +38,42 @@ export async function loginUser(email, password) {
 
   const data = await response.json();
 
-  const user = data.user ? data.user : data;
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.user));
 
-  localStorage.setItem("user", JSON.stringify(user));
-
-  return user;
+  return data.user;
 }
 
 // Logout user
 export function logoutUser() {
+  localStorage.removeItem("token");
   localStorage.removeItem("user");
 }
 
 // Get current logged-in user
 export function getCurrentUser() {
   const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
+}
 
-  if (!user) {
-    return null;
-  }
+// Get the stored JWT token
+export function getToken() {
+  return localStorage.getItem("token");
+}
 
-  return JSON.parse(user);
+// Returns headers with Authorization token for authenticated requests
+export function authHeaders(extra = {}) {
+  const token = getToken();
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...extra,
+  };
 }
 
 // Get all users from DB
 export async function getUsers() {
-  const response = await fetch(API_URL);
+  const response = await fetch(API_URL, { headers: authHeaders() });
 
   if (!response.ok) {
     throw new Error("Failed to load users");
@@ -76,7 +84,7 @@ export async function getUsers() {
 
 // Get one user by ID from DB
 export async function getUserById(id) {
-  const response = await fetch(`${API_URL}/${id}`);
+  const response = await fetch(`${API_URL}/${id}`, { headers: authHeaders() });
 
   if (!response.ok) {
     throw new Error("Failed to load user");
@@ -89,9 +97,7 @@ export async function getUserById(id) {
 export async function updateUser(id, updatedData) {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: authHeaders(),
     body: JSON.stringify(updatedData),
   });
 
@@ -107,6 +113,7 @@ export async function updateUser(id, updatedData) {
 export async function deleteUser(id) {
   const response = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
+    headers: authHeaders(),
   });
 
   if (!response.ok) {
