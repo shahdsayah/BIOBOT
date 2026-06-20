@@ -10,7 +10,21 @@ const formsRoute = require("./routes/forms.route");
 
 const app = express(); //create the application instance
 
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    const allowed = [
+      "http://localhost:5173",
+      "https://biobot-eolprv63r-biobot.vercel.app",
+      process.env.FRONTEND_URL,
+    ].filter(Boolean);
+
+    if (!origin || allowed.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+}));
 app.use(express.json());
 app.use("/uploads", express.static("uploads")); //lets the browser open uploaded files
 
