@@ -26,8 +26,8 @@ export default function BioBotPage() {
     <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader title="ביו־בוט" buttonText="דף הבית" to="/home" />
 
-      <main className="flex-1 flex justify-center py-8">
-        <div className="w-[1100px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex overflow-hidden">
+      <main className="flex-1 flex justify-center py-4 sm:py-8 px-4">
+        <div className="w-full max-w-[1100px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex overflow-hidden">
           <ChatSidebar />
 
           <section className="flex-1 flex flex-col">

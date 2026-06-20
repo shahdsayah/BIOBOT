@@ -9,7 +9,7 @@ export default function ChatSidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 p-4">
+    <aside className="hidden sm:block w-64 bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 p-4">
       <PrimarySmallButton text="שיחה חדשה" />
 
       <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-6 mb-3">

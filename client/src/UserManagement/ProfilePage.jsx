@@ -96,9 +96,9 @@ export default function ProfilePage() {
     <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader title="פרופיל אישי" buttonText="דף הבית" to="/home" />
 
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 sm:p-8">
         <div className="max-w-[1150px] mx-auto space-y-6">
-          <section className="grid grid-cols-3 gap-6">
+          <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
               <h2 className="text-2xl font-bold text-brand mb-4">
                 פרטים אישיים
@@ -160,7 +160,8 @@ export default function ProfilePage() {
               מערכת שעות הרצאות
             </h2>
 
-            <table className="w-full text-center border-collapse">
+            <div className="overflow-x-auto">
+            <table className="w-full text-center border-collapse min-w-[500px]">
               <thead>
                 <tr className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
                   <th className="border border-slate-300 dark:border-slate-600 py-3">שעה</th>
@@ -216,6 +217,7 @@ export default function ProfilePage() {
                 )}
               </tbody>
             </table>
+            </div>
           </section>
 
           {courses.length === 0 ? (
@@ -232,7 +234,7 @@ export default function ProfilePage() {
                   התפלגות ציונים
                 </h2>
 
-                <div className="grid grid-cols-5 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
                   {gradeRanges.map((range) => (
                     <div
                       key={range.label}
@@ -267,7 +269,8 @@ export default function ProfilePage() {
                   </select>
                 </div>
 
-                <table className="w-full text-right border-collapse">
+                <div className="overflow-x-auto">
+                <table className="w-full text-right border-collapse min-w-[300px]">
                   <thead>
                     <tr className="border-b dark:border-slate-600 text-slate-600 dark:text-slate-300">
                       <th className="py-3">שם הקורס</th>
@@ -286,6 +289,7 @@ export default function ProfilePage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </section>
             </>
           )}

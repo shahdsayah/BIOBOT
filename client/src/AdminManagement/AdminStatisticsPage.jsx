@@ -15,9 +15,9 @@ export default function AdminStatisticsPage() {
     <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader title="סטטיסטיקות מערכת" buttonText="לוח ניהול" to="/admin" />
 
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 sm:p-8">
         <div className="max-w-[1100px] mx-auto space-y-8">
-          <section className="grid grid-cols-4 gap-6">
+          <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 text-center">
               <FaUsers className="text-4xl mx-auto mb-4 text-brand" />
               <h2 className="text-3xl font-bold dark:text-white">12</h2>

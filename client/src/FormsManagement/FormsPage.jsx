@@ -62,8 +62,8 @@ export default function FormsPage() {
     <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader title="נהלים וטפסים" buttonText="דף הבית" to="/home" />
 
-      <main className="flex-1 flex justify-center mt-10">
-        <div className="w-[760px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
+      <main className="flex-1 flex justify-center mt-10 px-4">
+        <div className="w-full max-w-[760px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8">
           
           {/* Search Bar Container */}
           <div className="flex gap-4 mb-8">
@@ -89,7 +89,7 @@ export default function FormsPage() {
           )}
 
           {/* Dynamic Forms Grid Grid */}
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {filteredForms.map((form) => (
               <InfoCard
                 key={form._id || form.title} // MongoDB uses _id

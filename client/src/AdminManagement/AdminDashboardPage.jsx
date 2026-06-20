@@ -24,10 +24,10 @@ export default function AdminDashboardPage() {
         onClick={handleLogout}
       />
 
-      <main className="flex-1 px-8 py-10">
+      <main className="flex-1 px-4 sm:px-8 py-10">
         <div className="max-w-[1150px] mx-auto">
           <section className="text-center mb-12">
-            <h1 className="text-4xl font-extrabold text-brand mb-3">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-brand mb-3">
               שלום {admin?.firstName || "מנהל"} 👋
             </h1>
 
@@ -36,7 +36,7 @@ export default function AdminDashboardPage() {
             </p>
           </section>
 
-          <section className="grid grid-cols-4 gap-6 mb-12">
+          <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-12">
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 text-center">
               <FaUsers className="text-4xl mx-auto mb-4 text-brand" />
               <h2 className="text-3xl font-bold dark:text-white">12</h2>
@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
             </div>
           </section>
 
-          <section className="grid grid-cols-3 gap-8">
+          <section className="grid grid-cols-1 sm:grid-cols-3 gap-6 justify-items-center">
             <CardButton
               icon={<FaFileAlt />}
               title="ניהול טפסים"

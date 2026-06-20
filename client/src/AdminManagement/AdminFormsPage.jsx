@@ -129,7 +129,7 @@ export default function AdminFormsPage() {
       <PageHeader title="ניהול טפסים" buttonText="לוח ניהול" to="/admin" />
 
       <main className="flex-1 py-10 px-8">
-        <div className="max-w-[1250px] mx-auto grid grid-cols-2 gap-8">
+        <div className="max-w-[1250px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 order-1">
             <h2 className="text-3xl font-bold text-brand mb-6">
               טפסים קיימים

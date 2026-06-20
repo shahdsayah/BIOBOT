@@ -43,7 +43,7 @@ export default function StudentHomePage() {
           ברוכים הבאים למערכת ביו-בוט
         </p>
 
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl justify-items-center">
           <CardButton
             icon={<FaUser />}
             title="פרופיל אישי"

@@ -162,7 +162,7 @@ export default function AdminUsersPage() {
     <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader title="ניהול משתמשים" buttonText="לוח ניהול" to="/admin" />
 
-      <main className="flex-1 p-8">
+      <main className="flex-1 p-4 sm:p-8">
         <div className="max-w-[1250px] mx-auto">
           {loading && (
             <p className="text-slate-500 dark:text-slate-400 text-center">טוען משתמשים...</p>
@@ -171,7 +171,7 @@ export default function AdminUsersPage() {
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
           {!loading && (
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <FaUserGraduate className="text-4xl text-brand" />
