@@ -4,13 +4,18 @@ import PageHeader from "../GUIManagement/PageHeader";
 import Footer from "../GUIManagement/Footer";
 
 import { getCurrentUser, getUserById } from "../Services/authService";
+import { useLanguage } from "../contexts/languageContext";
 
-const SCHEDULE_DAYS = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
+const SCHEDULE_DAYS_HE = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
+const SCHEDULE_DAYS_AR = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس"];
 
 export default function ProfilePage() {
+  const { t, language } = useLanguage();
   const [sortType, setSortType] = useState("name");
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const SCHEDULE_DAYS = language === "ar" ? SCHEDULE_DAYS_AR : SCHEDULE_DAYS_HE;
 
   useEffect(() => {
     async function loadStudent() {
@@ -43,7 +48,6 @@ export default function ProfilePage() {
     loadStudent();
   }, []);
 
-  // Real data from the database — no more hardcoded arrays.
   const courses = student?.completedCourses || [];
   const schedule = student?.schedule || [];
 
@@ -55,8 +59,6 @@ export default function ProfilePage() {
 
   const totalCredits = courses.reduce((sum, course) => sum + course.credits, 0);
 
-  // Guard against 0/0 = NaN for a first-semester student with no
-  // completed courses yet (the year-א template starts empty).
   const gpa =
     totalCredits > 0
       ? courses.reduce((sum, course) => sum + course.grade * course.credits, 0) /
@@ -65,78 +67,66 @@ export default function ProfilePage() {
 
   const gradeRanges = [
     { label: "90-100", count: courses.filter((c) => c.grade >= 90).length },
-    {
-      label: "80-89",
-      count: courses.filter((c) => c.grade >= 80 && c.grade <= 89).length,
-    },
-    {
-      label: "70-79",
-      count: courses.filter((c) => c.grade >= 70 && c.grade <= 79).length,
-    },
-    {
-      label: "60-69",
-      count: courses.filter((c) => c.grade >= 60 && c.grade <= 69).length,
-    },
-    {
-      label: "55-59",
-      count: courses.filter((c) => c.grade >= 55 && c.grade <= 59).length,
-    },
+    { label: "80-89", count: courses.filter((c) => c.grade >= 80 && c.grade <= 89).length },
+    { label: "70-79", count: courses.filter((c) => c.grade >= 70 && c.grade <= 79).length },
+    { label: "60-69", count: courses.filter((c) => c.grade >= 60 && c.grade <= 69).length },
+    { label: "55-59", count: courses.filter((c) => c.grade >= 55 && c.grade <= 59).length },
   ];
 
-  // Distinct start times actually present in this student's schedule,
-  // used as the table's rows. Built from real data, not fixed slots —
-  // different templates (year א/ב/ג/ד) have different time patterns.
   const timeSlots = [...new Set(schedule.map((entry) => entry.startTime))].sort();
 
   function getClassAt(day, time) {
-    return schedule.find((entry) => entry.day === day && entry.startTime === time);
+    const dayIndexMap = language === "ar" ? SCHEDULE_DAYS_AR : SCHEDULE_DAYS_HE;
+    const dayIndex = dayIndexMap.indexOf(day);
+    const heDay = SCHEDULE_DAYS_HE[dayIndex];
+    return schedule.find((entry) => entry.day === heDay && entry.startTime === time);
   }
 
   return (
     <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
-      <PageHeader title="פרופיל אישי" buttonText="דף הבית" to="/home" />
+      <PageHeader title={t("profilePage")} buttonText={t("homeButton")} to="/home" showLanguageToggle />
 
       <main className="flex-1 p-4 sm:p-8">
         <div className="max-w-[1150px] mx-auto space-y-6">
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
               <h2 className="text-2xl font-bold text-brand mb-4">
-                פרטים אישיים
+                {t("privateDetails")}
               </h2>
 
               <p>
-                <strong>שם:</strong>{" "}
+                <strong>{t("stdname")}:</strong>{" "}
                 {loading
-                  ? "טוען..."
+                  ? t("loading")
                   : student
                   ? `${student.firstName || ""} ${student.lastName || ""}`
-                  : "לא נמצא"}
+                  : t("notFound")}
               </p>
 
               <p>
-                <strong>אימייל:</strong>{" "}
-                {loading ? "טוען..." : student?.email || "לא נמצא"}
+                <strong>{t("stdEmail")}:</strong>{" "}
+                {loading ? t("loading") : student?.email || t("notFound")}
               </p>
 
               <p>
-                <strong>תפקיד:</strong>{" "}
-                {loading ? "טוען..." : student?.role || "student"}
+                <strong>{t("stdRole")}:</strong>{" "}
+                {loading ? t("loading") : student?.role || "student"}
               </p>
 
               <p>
-                <strong>מחלקה:</strong>{" "}
-                {student?.department || "הנדסת ביוטכנולוגיה"}
+                <strong>{t("stdDept")}:</strong>{" "}
+                {student?.department || t("departmentFallback")}
               </p>
 
               <p>
-                <strong>שנה:</strong>{" "}
-                {student?.year ? `שנה ${student.year}׳` : "—"}
+                <strong>{t("stdYear")}:</strong>{" "}
+                {student?.year ? `${t("stdYear")} ${student.year}׳` : "—"}
               </p>
             </div>
 
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 flex flex-col justify-center items-center">
               <h2 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-3">
-                ממוצע ציונים
+                {t("averageGrade")}
               </h2>
 
               <p className="text-5xl font-extrabold text-brand">
@@ -146,7 +136,7 @@ export default function ProfilePage() {
 
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 flex flex-col justify-center items-center">
               <h2 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-3">
-                נקודות זכות
+                {t("points")}
               </h2>
 
               <p className="text-5xl font-extrabold text-brand">
@@ -157,81 +147,84 @@ export default function ProfilePage() {
 
           <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
             <h2 className="text-2xl font-bold text-brand mb-6">
-              מערכת שעות הרצאות
+              {language === "ar" ? "جدول المحاضرات" : "מערכת שעות הרצאות"}
             </h2>
 
             <div className="overflow-x-auto">
-            <table className="w-full text-center border-collapse min-w-[500px]">
-              <thead>
-                <tr className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
-                  <th className="border border-slate-300 dark:border-slate-600 py-3">שעה</th>
-                  {SCHEDULE_DAYS.map((day) => (
-                    <th key={day} className="border border-slate-300 dark:border-slate-600 py-3">
-                      {day}
+              <table className="w-full text-center border-collapse min-w-[500px]">
+                <thead>
+                  <tr className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                    <th className="border border-slate-300 dark:border-slate-600 py-3">
+                      {language === "ar" ? "الوقت" : "שעה"}
                     </th>
-                  ))}
-                </tr>
-              </thead>
-
-              <tbody>
-                {timeSlots.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={SCHEDULE_DAYS.length + 1}
-                      className="border border-slate-300 dark:border-slate-600 h-24 text-slate-400"
-                    >
-                      אין נתוני מערכת שעות זמינים כרגע
-                    </td>
+                    {SCHEDULE_DAYS.map((day) => (
+                      <th key={day} className="border border-slate-300 dark:border-slate-600 py-3">
+                        {day}
+                      </th>
+                    ))}
                   </tr>
-                ) : (
-                  timeSlots.map((time) => (
-                    <tr key={time}>
-                      <td className="border border-slate-300 dark:border-slate-600 py-2 font-bold text-slate-600">
-                        {time}
+                </thead>
+
+                <tbody>
+                  {timeSlots.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={SCHEDULE_DAYS.length + 1}
+                        className="border border-slate-300 dark:border-slate-600 h-24 text-slate-400"
+                      >
+                        {language === "ar" ? "لا يوجد جدول متاح" : "אין נתוני מערכת שעות זמינים כרגע"}
                       </td>
-
-                      {SCHEDULE_DAYS.map((day) => {
-                        const entry = getClassAt(day, time);
-
-                        return (
-                          <td
-                            key={day}
-                            className="border border-slate-300 dark:border-slate-600 h-24 align-top p-2"
-                          >
-                            {entry && (
-                              <div>
-                                <p className="font-bold text-sm text-slate-800 dark:text-slate-100">
-                                  {entry.courseName}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">
-                                  {entry.startTime}–{entry.endTime}
-                                  {entry.room ? ` · ${entry.room}` : ""}
-                                </p>
-                              </div>
-                            )}
-                          </td>
-                        );
-                      })}
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    timeSlots.map((time) => (
+                      <tr key={time}>
+                        <td className="border border-slate-300 dark:border-slate-600 py-2 font-bold text-slate-600">
+                          {time}
+                        </td>
+
+                        {SCHEDULE_DAYS.map((day) => {
+                          const entry = getClassAt(day, time);
+
+                          return (
+                            <td
+                              key={day}
+                              className="border border-slate-300 dark:border-slate-600 h-24 align-top p-2"
+                            >
+                              {entry && (
+                                <div>
+                                  <p className="font-bold text-sm text-slate-800 dark:text-slate-100">
+                                    {entry.courseName}
+                                  </p>
+                                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    {entry.startTime}–{entry.endTime}
+                                    {entry.room ? ` · ${entry.room}` : ""}
+                                  </p>
+                                </div>
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </section>
 
           {courses.length === 0 ? (
             <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 text-center">
               <p className="text-slate-500 dark:text-slate-400">
-                עדיין לא הושלמו קורסים — הציונים יופיעו כאן לאחר תום הסמסטר
-                הראשון.
+                {language === "ar"
+                  ? "لم تُكتمل أي كورسات بعد — ستظهر الدرجات هنا بعد نهاية الفصل الأول."
+                  : "עדיין לא הושלמו קורסים — הציונים יופיעו כאן לאחר תום הסמסטר הראשון."}
               </p>
             </section>
           ) : (
             <>
               <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
                 <h2 className="text-2xl font-bold text-brand mb-6">
-                  התפלגות ציונים
+                  {t("gradeDistribution")}
                 </h2>
 
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
@@ -247,7 +240,7 @@ export default function ProfilePage() {
                       </div>
 
                       <p className="font-bold text-slate-700 dark:text-slate-200">{range.label}</p>
-                      <p className="text-sm text-slate-500">קורסים</p>
+                      <p className="text-sm text-slate-500">{t("coursesLabel")}</p>
                     </div>
                   ))}
                 </div>
@@ -256,7 +249,7 @@ export default function ProfilePage() {
               <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
                 <div className="flex items-center justify-between mb-5">
                   <h2 className="text-2xl font-bold text-brand">
-                    קורסים שהושלמו
+                    {t("coursesDone")}
                   </h2>
 
                   <select
@@ -264,31 +257,35 @@ export default function ProfilePage() {
                     onChange={(e) => setSortType(e.target.value)}
                     className="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-xl px-4 py-2 outline-none"
                   >
-                    <option value="name">מיון לפי שם הקורס</option>
-                    <option value="grade">מיון לפי ציון</option>
+                    <option value="name">
+                      {language === "ar" ? "ترتيب حسب اسم الكورس" : "מיון לפי שם הקורס"}
+                    </option>
+                    <option value="grade">
+                      {language === "ar" ? "ترتيب حسب الدرجة" : "מיון לפי ציון"}
+                    </option>
                   </select>
                 </div>
 
                 <div className="overflow-x-auto">
-                <table className="w-full text-right border-collapse min-w-[300px]">
-                  <thead>
-                    <tr className="border-b dark:border-slate-600 text-slate-600 dark:text-slate-300">
-                      <th className="py-3">שם הקורס</th>
-                      <th className="py-3">ציון</th>
-                      <th className="py-3">נק״ז</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {sortedCourses.map((course, index) => (
-                      <tr key={`${course.name}-${index}`} className="border-b dark:border-slate-600 dark:text-slate-200">
-                        <td className="py-3">{course.name}</td>
-                        <td className="py-3 font-bold">{course.grade}</td>
-                        <td className="py-3">{course.credits}</td>
+                  <table className="w-full text-right border-collapse min-w-[300px]">
+                    <thead>
+                      <tr className="border-b dark:border-slate-600 text-slate-600 dark:text-slate-300">
+                        <th className="py-3">{t("courseName")}</th>
+                        <th className="py-3">{t("courseGrade")}</th>
+                        <th className="py-3">{t("credits")}</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+
+                    <tbody>
+                      {sortedCourses.map((course, index) => (
+                        <tr key={`${course.name}-${index}`} className="border-b dark:border-slate-600 dark:text-slate-200">
+                          <td className="py-3">{course.name}</td>
+                          <td className="py-3 font-bold">{course.grade}</td>
+                          <td className="py-3">{course.credits}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </section>
             </>

@@ -7,11 +7,13 @@ import Footer from "../GUIManagement/Footer";
 import CardButton from "../GUIManagement/CardButton";
 
 import { getCurrentUser, logoutUser } from "../Services/authService";
+import { useLanguage } from "../contexts/languageContext";
 
 import logo from "../assets/logo.jpg";
 
 export default function StudentHomePage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const student = getCurrentUser();
 
@@ -23,9 +25,10 @@ export default function StudentHomePage() {
   return (
     <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
       <PageHeader
-        title="עמוד הבית"
-        buttonText="התנתק"
+        title={t("homePage")}
+        buttonText={t("logout")}
         onClick={handleLogout}
+        showLanguageToggle
       />
 
       <main className="flex-1 flex flex-col items-center justify-center px-8 py-10">
@@ -36,32 +39,32 @@ export default function StudentHomePage() {
         />
 
         <h1 className="text-4xl font-extrabold text-brand mb-3 text-center">
-          שלום {student?.firstName || "סטודנט"} 👋
+          {t("shalom")} {student?.firstName || t("studentFallback")} 👋
         </h1>
 
         <p className="text-slate-600 dark:text-slate-400 text-lg mb-12 text-center">
-          ברוכים הבאים למערכת ביו-בוט
+          {t("welcome")}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-3xl">
           <CardButton
             icon={<FaUser />}
-            title="פרופיל אישי"
-            description="צפייה בפרטים האישיים שלך"
+            title={t("profilePage")}
+            description={t("profileDesc")}
             onClick={() => navigate("/profile")}
           />
 
           <CardButton
             icon={<FaRobot />}
-            title="ביו-בוט"
-            description="מעבר לצ׳אט האקדמי החכם"
+            title={t("bioBotPage")}
+            description={t("bioBotDesc")}
             onClick={() => navigate("/chat")}
           />
 
           <CardButton
             icon={<FaFileAlt />}
-            title="נהלים וטפסים"
-            description="חיפוש טפסים ונהלים אקדמיים"
+            title={t("formsPage")}
+            description={t("formsDesc")}
             onClick={() => navigate("/forms")}
           />
         </div>

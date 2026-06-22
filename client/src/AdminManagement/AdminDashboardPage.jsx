@@ -62,7 +62,7 @@ export default function AdminDashboardPage() {
             </div>
           </section>
 
-          <section className="grid grid-cols-1 sm:grid-cols-3 gap-6 justify-items-center">
+          <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <CardButton
               icon={<FaFileAlt />}
               title="ניהול טפסים"

@@ -8,8 +8,12 @@ function authOnlyHeader() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export async function getForms() {
-  const response = await apiFetch(API_URL, {
+export async function getForms(search = "") {
+  const url = search
+    ? `${API_URL}?search=${encodeURIComponent(search)}`
+    : API_URL;
+
+  const response = await apiFetch(url, {
     headers: authOnlyHeader(),
   });
 

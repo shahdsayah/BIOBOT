@@ -1,24 +1,66 @@
-export async function saveMessage(userEmail, message) {
-  console.log("Saving message:", {
-    userEmail,
-    message,
+import { apiFetch, authHeaders } from "./authService";
+
+const API_URL = `${import.meta.env.VITE_API_URL}/api/chats`;
+
+// Send message to Gemini
+export async function sendMessage(message, chatId = null) {
+  const response = await apiFetch(API_URL, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ message, chatId }),
   });
 
-  return {
-    success: true,
-  };
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to send message");
+  }
+
+  return data;
 }
 
-export async function getChatHistory(userEmail) {
-  console.log("Getting chat history for:", userEmail);
+// Get all chats
+export async function getChats() {
+  const response = await apiFetch(API_URL, {
+    headers: authHeaders(),
+  });
 
-  return [];
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to load chats");
+  }
+
+  return data;
 }
 
+// Get one chat
+export async function getChat(chatId) {
+  const response = await apiFetch(`${API_URL}/${chatId}`, {
+    headers: authHeaders(),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to load chat");
+  }
+
+  return data;
+}
+
+// Delete chat
 export async function deleteChat(chatId) {
-  console.log("Deleting chat:", chatId);
+  const response = await apiFetch(`${API_URL}/${chatId}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
 
-  return {
-    success: true,
-  };
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to delete chat");
+  }
+
+  return data;
 }

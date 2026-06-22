@@ -8,6 +8,11 @@ const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 const router = express.Router();
 
+const {
+  includesHebrewMatch,
+} = require("../utils/hebrewTextUtils");
+
+
 // Create uploads folder if it does not exist
 const uploadDir = path.join(__dirname, "../uploads");
 
@@ -72,7 +77,19 @@ router.post("/", requireAdmin, upload.single("file"), async (req, res) => {
 // Get all forms for student/admin
 router.get("/", requireAuth, async (req, res) => {
   try {
-    const forms = await Form.find().sort({ createdAt: -1 });
+    const { search } = req.query;
+
+    let forms = await Form.find().sort({ createdAt: -1 });
+
+    if (search && search.trim() !== "") {
+      forms = forms.filter((form) => {
+        return (
+          includesHebrewMatch(form.title, search) ||
+          includesHebrewMatch(form.description, search) ||
+          includesHebrewMatch(form.category, search)
+        );
+      });
+    }
 
     res.json(forms);
   } catch (err) {

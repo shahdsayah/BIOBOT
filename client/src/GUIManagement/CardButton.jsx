@@ -2,7 +2,7 @@ export default function CardButton(props) {
   return (
     <div
       onClick={props.onClick}
-      className="w-full sm:w-72 h-56 bg-white dark:bg-slate-800 rounded-2xl shadow-xl cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition flex flex-col justify-center items-center p-6 text-center"
+      className="w-full min-h-48 bg-white dark:bg-slate-800 rounded-2xl shadow-xl cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition flex flex-col justify-center items-center p-6 text-center"
     >
       {props.icon && (
         <div className="text-4xl text-brand mb-5">
