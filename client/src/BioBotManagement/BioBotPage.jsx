@@ -75,6 +75,7 @@ export default function BioBotPage() {
         {
           sender: "bot",
           text: response.answer,
+          suggestedForm: response.suggestedForm || null,
         },
       ]);
 
@@ -170,6 +171,21 @@ export default function BioBotPage() {
                     }`}
                   >
                     {message.text}
+                    {message.suggestedForm && (
+                      <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600">
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
+                          הטופס המתאים:
+                        </p>
+                        <a
+                          href={`${import.meta.env.VITE_API_URL}${message.suggestedForm.fileUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 bg-brand text-white text-sm font-bold px-4 py-2 rounded-xl hover:opacity-90 transition"
+                        >
+                          📄 {message.suggestedForm.title} — פתח קובץ
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
