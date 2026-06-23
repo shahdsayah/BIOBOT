@@ -6,8 +6,7 @@ const User = require("../models/UserSchema");
 const { requireAuth } = require("../middleware/auth");
 const knowledgeBase = require("../data/knowledgeBase");
 const { normalizeHebrewText } = require("../utils/hebrewTextUtils");
-import dotenv from "dotenv";
-dotenv.config();
+
 const router = express.Router();
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
