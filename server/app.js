@@ -17,7 +17,7 @@ app.use(cors({
     if (!origin) return callback(null, true);
 
     const isLocalhost = origin === "http://localhost:5173";
-    const isVercel = /^https:\/\/biobot.*\.vercel\.app$/.test(origin);
+    const isVercel = /^https:\/\/.*\.vercel\.app$/.test(origin);
     const isCustomDomain = origin === process.env.FRONTEND_URL;
 
     if (isLocalhost || isVercel || isCustomDomain) {
