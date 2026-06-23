@@ -1,14 +1,8 @@
 const EMBEDDING_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent";
 
-const API_KEY = process.env.GEMINI_API_KEY;
-
-/**
- * יוצר embedding לטקסט בודד
- * מחזיר מערך מספרים (וקטור 768 מימדים)
- */
 async function embedText(text) {
-  const response = await fetch(`${EMBEDDING_URL}?key=${API_KEY}`, {
+  const response = await fetch(`${EMBEDDING_URL}?key=${process.env.GEMINI_API_KEY}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

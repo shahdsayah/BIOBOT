@@ -58,7 +58,7 @@ router.post("/register", async (req, res) => {
     const { password, ...userWithoutPassword } = user.toObject();
     res.status(201).json(userWithoutPassword);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ message: err.message || "Registration failed" });
   }
 });
 
@@ -86,7 +86,7 @@ router.post("/login", async (req, res) => {
     const { password, ...userWithoutPassword } = user.toObject();
     res.json({ token, user: userWithoutPassword });
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ message: err.message || "Server error" });
   }
 });
 
@@ -103,7 +103,7 @@ router.get("/:id", requireAuth, async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ message: err.message || "Server error" });
   }
 });
 
@@ -119,7 +119,7 @@ router.put("/:id", requireAuth, async (req, res) => {
 
     res.json(updatedUser);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ message: err.message || "Server error" });
   }
 });
 
@@ -133,7 +133,7 @@ router.delete("/:id", requireAdmin, async (req, res) => {
       message: "User deleted successfully",
     });
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ message: err.message || "Server error" });
   }
 });
 
@@ -145,7 +145,7 @@ router.get("/", requireAdmin, async (req, res) => {
 
     res.json(users);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ message: err.message || "Server error" });
   }
 });
 

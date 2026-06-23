@@ -8,6 +8,7 @@ const cors = require("cors"); //import the CORS middleware package
 const usersRoute = require("./routes/users.route");
 const formsRoute = require("./routes/forms.route");
 const chatRoutes = require("./routes/chats.route");
+const statsRoutes = require("./routes/stats.route");
 
 const app = express(); //create the application instance
 
@@ -50,6 +51,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", usersRoute);
 app.use("/api/forms", formsRoute);
 app.use("/api/chats", chatRoutes);
+app.use("/api/stats", statsRoutes);
 
 const PORT = process.env.PORT || 3000;
 

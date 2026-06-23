@@ -30,7 +30,6 @@ export default function AdminFormsPage() {
       const data = await getForms();
       setForms(data);
     } catch (err) {
-      console.log(err);
       setError(err.message);
     }
   }
@@ -79,7 +78,6 @@ export default function AdminFormsPage() {
       resetForm();
       await loadForms();
     } catch (err) {
-      console.log(err);
       setError(err.message);
     }
   }
@@ -111,7 +109,6 @@ export default function AdminFormsPage() {
         resetForm();
       }
     } catch (err) {
-      console.log(err);
       setError(err.message);
     }
   }

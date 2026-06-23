@@ -25,7 +25,6 @@ export default function FormsPage() {
         setForms(data);
         setFilteredForms(data); // Initial view displays all forms
       } catch (err) {
-        console.error(err);
         setError("שגיאה בטעינת הטפסים. אנא נסה שוב מאוחר יותר.");
       } finally {
         setLoading(false);

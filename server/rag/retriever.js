@@ -43,7 +43,18 @@ function cosineSimilarity(a, b) {
  */
 async function retrieve(question, topK = 4) {
   const index = getIndex();
-  const questionEmbedding = await embedText(question);
+
+  let questionEmbedding;
+  try {
+    questionEmbedding = await embedText(question);
+  } catch {
+    // embedding failed — fall back to keyword search
+    const q = question.toLowerCase();
+    const keyword = index
+      .map((entry) => ({ ...entry, score: entry.text.toLowerCase().includes(q) ? 1 : 0 }))
+      .sort((a, b) => b.score - a.score);
+    return keyword.slice(0, topK);
+  }
 
   const scored = index.map((entry) => ({
     text: entry.text,

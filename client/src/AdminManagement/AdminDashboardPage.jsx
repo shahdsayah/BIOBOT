@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaFileAlt, FaUsers, FaChartBar, FaRobot } from "react-icons/fa";
 
@@ -6,15 +7,29 @@ import Footer from "../GUIManagement/Footer";
 import CardButton from "../GUIManagement/CardButton";
 
 import { getCurrentUser, logoutUser } from "../Services/authService";
+import { getStats } from "../Services/statsService";
 
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
   const admin = getCurrentUser();
 
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    getStats().then(setStats).catch(() => {});
+  }, []);
+
   function handleLogout() {
     logoutUser();
     navigate("/login");
   }
+
+  const cards = [
+    { icon: <FaUsers />, label: "סטודנטים", value: stats?.totalUsers },
+    { icon: <FaFileAlt />, label: "טפסים", value: stats?.totalForms },
+    { icon: <FaRobot />, label: "שאלות", value: stats?.totalQuestions },
+    { icon: <FaChartBar />, label: "שיחות", value: stats?.totalChats },
+  ];
 
   return (
     <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
@@ -37,29 +52,15 @@ export default function AdminDashboardPage() {
           </section>
 
           <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-12">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 text-center">
-              <FaUsers className="text-4xl mx-auto mb-4 text-brand" />
-              <h2 className="text-3xl font-bold dark:text-white">12</h2>
-              <p className="text-slate-500 dark:text-slate-400">משתמשים</p>
-            </div>
-
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 text-center">
-              <FaFileAlt className="text-4xl mx-auto mb-4 text-brand" />
-              <h2 className="text-3xl font-bold dark:text-white">4</h2>
-              <p className="text-slate-500 dark:text-slate-400">טפסים</p>
-            </div>
-
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 text-center">
-              <FaRobot className="text-4xl mx-auto mb-4 text-brand" />
-              <h2 className="text-3xl font-bold dark:text-white">28</h2>
-              <p className="text-slate-500 dark:text-slate-400">שאלות</p>
-            </div>
-
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 text-center">
-              <FaChartBar className="text-4xl mx-auto mb-4 text-brand" />
-              <h2 className="text-3xl font-bold dark:text-white">7</h2>
-              <p className="text-slate-500 dark:text-slate-400">נושאים נפוצים</p>
-            </div>
+            {cards.map(({ icon, label, value }) => (
+              <div key={label} className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 text-center">
+                <div className="text-4xl mx-auto mb-4 text-brand flex justify-center">{icon}</div>
+                <h2 className="text-3xl font-bold dark:text-white">
+                  {stats ? (value ?? 0) : "..."}
+                </h2>
+                <p className="text-slate-500 dark:text-slate-400">{label}</p>
+              </div>
+            ))}
           </section>
 
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">

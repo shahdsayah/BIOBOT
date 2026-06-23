@@ -5,11 +5,7 @@ import Footer from "../GUIManagement/Footer";
 import PrimarySmallButton from "../GUIManagement/PrimarySmallButton";
 import ChatSidebar from "./ChatSidebar";
 
-import{
-  sendMessage,
-  getChats,
-  getChat,
-}from "../Services/chatService";
+import { sendMessage, getChats, getChat, deleteChat } from "../Services/chatService";
 
 export default function BioBotPage() {
   const [input, setInput] = useState("");
@@ -17,6 +13,7 @@ export default function BioBotPage() {
 
   const [chatId, setChatId] = useState(null);
   const [chats, setChats] = useState([]);
+  const [activeChatTitle, setActiveChatTitle] = useState(null);
 
   const messagesEndRef = useRef(null);
 
@@ -33,7 +30,6 @@ export default function BioBotPage() {
         const data = await getChats();
         setChats(data);
       } catch (err) {
-        console.log(err);
       }
     }
 
@@ -50,7 +46,6 @@ export default function BioBotPage() {
       const data = await getChats();
       setChats(data);
     } catch (err) {
-      console.log(err);
     }
   }
 
@@ -85,7 +80,6 @@ export default function BioBotPage() {
 
       await refreshChats();
     } catch (err) {
-      console.log(err);
 
       setMessages((prev) => [
         ...prev,
@@ -101,6 +95,7 @@ export default function BioBotPage() {
 
   function handleNewChat() {
     setChatId(null);
+    setActiveChatTitle(null);
     setMessages([
       {
         sender: "bot",
@@ -113,12 +108,19 @@ export default function BioBotPage() {
   async function handleSelectChat(chat) {
     try {
       const fullChat = await getChat(chat._id);
-
       setChatId(fullChat._id);
-
+      setActiveChatTitle(fullChat.title);
       setMessages(fullChat.messages);
     } catch (err) {
-      console.log(err);
+    }
+  }
+
+  async function handleDeleteChat(id) {
+    try {
+      await deleteChat(id);
+      if (chatId === id) handleNewChat();
+      await refreshChats();
+    } catch (err) {
     }
   }
   
@@ -136,12 +138,13 @@ export default function BioBotPage() {
             activeChatId={chatId}
             onNewChat={handleNewChat}
             onSelectChat={handleSelectChat}
+            onDeleteChat={handleDeleteChat}
           />
 
           <section className="flex-1 flex flex-col">
             <div className="border-b border-slate-200 dark:border-slate-700 px-6 py-4">
-              <h2 className="text-2xl font-bold text-brand">
-                צ׳אט אקדמי חכם
+              <h2 className="text-2xl font-bold text-brand truncate">
+                {activeChatTitle || "צ׳אט אקדמי חכם"}
               </h2>
 
               <p className="text-slate-500 dark:text-slate-400 mt-1">
@@ -173,8 +176,10 @@ export default function BioBotPage() {
 
               {loading && (
                 <div className="flex justify-end">
-                  <div className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 px-5 py-3 rounded-2xl shadow-sm">
-                    ביו־בוט חושב...
+                  <div className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 px-5 py-4 rounded-2xl shadow-sm flex items-center gap-1">
+                    <span className="w-2 h-2 bg-brand rounded-full animate-bounce [animation-delay:0ms]" />
+                    <span className="w-2 h-2 bg-brand rounded-full animate-bounce [animation-delay:150ms]" />
+                    <span className="w-2 h-2 bg-brand rounded-full animate-bounce [animation-delay:300ms]" />
                   </div>
                 </div>
               )}
@@ -193,7 +198,7 @@ export default function BioBotPage() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="כתוב שאלה לביו־בוט..."
+                placeholder="כתוב שאלה לביו-בוט..."
                 disabled={loading}
                 className="flex-1 border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400 rounded-xl px-4 py-3 outline-none focus:border-brand"
               />

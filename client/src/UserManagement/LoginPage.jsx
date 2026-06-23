@@ -44,7 +44,6 @@ export default function LoginPage() {
         navigate("/home");
       }
     } catch (err) {
-      console.log(err);
       setError(err.message || "Login failed");
       captchaRef.current.refreshCaptcha();
     }

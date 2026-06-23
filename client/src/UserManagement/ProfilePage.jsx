@@ -36,7 +36,6 @@ export default function ProfilePage() {
           setStudent(currentUser);
         }
       } catch (error) {
-        console.error("Failed to load student:", error);
 
         const currentUser = getCurrentUser();
         setStudent(currentUser);

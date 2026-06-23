@@ -51,7 +51,6 @@ export default function SignupPage() {
 
       navigate("/login");
     } catch (err) {
-      console.log(err);
       setError(err.message || "Registration failed");
       captchaRef.current.refreshCaptcha();
     }

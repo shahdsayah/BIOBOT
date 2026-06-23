@@ -27,7 +27,6 @@ export default function AdminUsersPage() {
       const data = await getUsers();
       setUsers(data);
     } catch (err) {
-      console.log(err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -52,7 +51,6 @@ export default function AdminUsersPage() {
       await updateUser(user._id, { role: newRole });
       await loadUsers();
     } catch (err) {
-      console.log(err);
       setError(err.message);
     }
   }
@@ -74,7 +72,6 @@ export default function AdminUsersPage() {
       await deleteUser(user._id);
       await loadUsers();
     } catch (err) {
-      console.log(err);
       setError(err.message);
     }
   }
