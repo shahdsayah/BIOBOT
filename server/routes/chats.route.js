@@ -4,8 +4,7 @@ const express = require("express");
 const Chat = require("../models/ChatSchema");
 const User = require("../models/UserSchema");
 const { requireAuth } = require("../middleware/auth");
-const knowledgeBase = require("../data/knowledgeBase");
-const { normalizeHebrewText } = require("../utils/hebrewTextUtils");
+const { retrieveAsText } = require("../rag/retriever");
 
 const router = express.Router();
 
@@ -29,7 +28,7 @@ router.post("/", requireAuth, async (req, res) => {
       });
     }
 
-    const relevantKnowledge = getRelevantKnowledge(message, knowledgeBase);
+    const relevantKnowledge = await retrieveAsText(message, 4);
 
     const systemPrompt = `You are BIO-BOT 2.0, an academic assistant for students in the Biotechnology Engineering department at ORT Braude College.
 
@@ -204,22 +203,5 @@ router.delete("/:id", requireAuth, async (req, res) => {
   }
 });
 
-function getRelevantKnowledge(question, knowledgeBase) {
-  const normalizedQuestion = normalizeHebrewText(question);
-
-  const sections = knowledgeBase.split("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-  const relevantSections = sections.filter((section) => {
-    const normalizedSection = normalizeHebrewText(section);
-
-    return normalizedQuestion
-      .split(" ")
-      .some((word) => normalizedSection.includes(word));
-  });
-
-  return relevantSections.length > 0
-    ? relevantSections.join("\n\n")
-    : knowledgeBase;
-}
 
 module.exports = router;
