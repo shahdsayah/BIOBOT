@@ -5,35 +5,35 @@ import Footer from "../GUIManagement/Footer";
 import SearchBar from "../GUIManagement/SearchBar";
 import PrimarySmallButton from "../GUIManagement/PrimarySmallButton";
 import InfoCard from "../GUIManagement/InfoCard";
+import { useLanguage } from "../contexts/languageContext";
 
-// Import your student forms service utilities
 import { getStudentForms, getFormFileUrl } from "../Services/studentFormsService";
 
 export default function FormsPage() {
+  const { t } = useLanguage();
   const [forms, setForms] = useState([]);
   const [filteredForms, setFilteredForms] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 1. Fetch forms dynamically from the database on mount
   useEffect(() => {
     async function loadForms() {
       try {
         setLoading(true);
         const data = await getStudentForms();
         setForms(data);
-        setFilteredForms(data); // Initial view displays all forms
+        setFilteredForms(data);
       } catch (err) {
-        setError("שגיאה בטעינת הטפסים. אנא נסה שוב מאוחר יותר.");
+        setError(t("formsLoadError"));
       } finally {
         setLoading(false);
       }
     }
-    loadForms();
-  }, []);
 
-  // 2. Handle search functionality
+    loadForms();
+  }, [t]);
+
   const handleSearch = () => {
     if (!searchTerm.trim()) {
       setFilteredForms(forms);
@@ -46,55 +46,54 @@ export default function FormsPage() {
     setFilteredForms(filtered);
   };
 
-  // 3. Open/Download Form File URL
   const handleOpenForm = (form) => {
     const fullUrl = getFormFileUrl(form);
     if (fullUrl) {
-      // Opens the file (PDF/Docx/Image) in a new browser tab where they can view/download it
       window.open(fullUrl, "_blank", "noopener,noreferrer");
     } else {
-      alert("קובץ לא נמצא עבור טופס זה");
+      alert(t("formFileMissing"));
     }
   };
 
   return (
     <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
-      <PageHeader title="נהלים וטפסים" buttonText="דף הבית" to="/home" />
+      <PageHeader
+        title={t("formsPage")}
+        buttonText={t("homeButton")}
+        to="/home"
+        showLanguageToggle
+      />
 
       <main className="flex-1 flex justify-center mt-10 px-4">
         <div className="w-full max-w-[760px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8">
           
-          {/* Search Bar Container */}
           <div className="flex gap-4 mb-8">
             <SearchBar 
-              placeholder="חיפוש טופס או נוהל..." 
+              placeholder={t("formsSearchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              // Optional: Enables live searching as you type
-              onKeyUp={(e) => e.key === 'Enter' && handleSearch()} 
+              onKeyUp={(e) => e.key === "Enter" && handleSearch()}
             />
 
             <PrimarySmallButton
-              text="חיפוש"
+              text={t("searchButton")}
               onClick={handleSearch}
             />
           </div>
 
-          {/* Status Messages */}
-          {loading && <p className="text-center text-slate-500 dark:text-slate-400">טוען טפסים...</p>}
+          {loading && <p className="text-center text-slate-500 dark:text-slate-400">{t("formsLoading")}</p>}
           {error && <p className="text-center text-red-500">{error}</p>}
           {!loading && !error && filteredForms.length === 0 && (
-            <p className="text-center text-slate-500 dark:text-slate-400">לא נמצאו טפסים תואמים.</p>
+            <p className="text-center text-slate-500 dark:text-slate-400">{t("formsEmpty")}</p>
           )}
 
-          {/* Dynamic Forms Grid Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {filteredForms.map((form) => (
               <InfoCard
-                key={form._id || form.title} // MongoDB uses _id
+                key={form._id || form.title}
                 title={form.title}
                 description={form.description}
-                buttonText="פתח קובץ"
+                buttonText={t("openFile")}
                 onClick={() => handleOpenForm(form)}
               />
             ))}

@@ -12,6 +12,7 @@ import FormsPage from "./FormsManagement/FormsPage";
 import BioBotPage from "./BioBotManagement/BioBotPage";
 import ProtectedRoute from "./UserManagement/ProtectedRoute";
 import AdminRoute from "./UserManagement/AdminRoute";
+import NotFoundPage from "./UserManagement/NotFoundPage";
 
 export default function App() {
   return (
@@ -39,6 +40,8 @@ export default function App() {
         <Route path="/admin/users" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
 
         <Route path="/admin/statistics" element={<AdminRoute><AdminStatisticsPage /></AdminRoute>} />
+
+        <Route path="*" element={<NotFoundPage />} />
 
       </Routes>
     </BrowserRouter>

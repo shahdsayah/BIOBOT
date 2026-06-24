@@ -1,5 +1,6 @@
 import PrimarySmallButton from "../GUIManagement/PrimarySmallButton";
 import { FaTrash } from "react-icons/fa";
+import { useLanguage } from "../contexts/languageContext";
 
 export default function ChatSidebar({
   chats = [],
@@ -8,17 +9,19 @@ export default function ChatSidebar({
   onSelectChat,
   onDeleteChat,
 }) {
+  const { t, language } = useLanguage();
+
   return (
     <aside className="hidden sm:flex flex-col w-72 bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 p-4">
-      <PrimarySmallButton text="שיחה חדשה" onClick={onNewChat} />
+      <PrimarySmallButton text={t("newChat")} onClick={onNewChat} />
 
       <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-6 mb-3">
-        היסטוריית שיחות
+        {t("chatHistory")}
       </h3>
 
       <div className="flex-1 overflow-y-auto space-y-1">
         {chats.length === 0 ? (
-          <p className="text-sm text-slate-400">עדיין אין שיחות.</p>
+          <p className="text-sm text-slate-400">{t("noChats")}</p>
         ) : (
           chats.map((chat) => (
             <div
@@ -38,11 +41,11 @@ export default function ChatSidebar({
                     ? "text-brand"
                     : "text-slate-700 dark:text-slate-300"
                 }`}>
-                  {chat.title || "שיחה חדשה"}
+                  {chat.title || t("newChat")}
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">
                   {chat.updatedAt
-                    ? new Date(chat.updatedAt).toLocaleDateString("he-IL")
+                    ? new Date(chat.updatedAt).toLocaleDateString(language === "ar" ? "ar" : "he-IL")
                     : ""}
                 </div>
               </button>
@@ -53,7 +56,7 @@ export default function ChatSidebar({
                   onDeleteChat && onDeleteChat(chat._id);
                 }}
                 className="opacity-0 group-hover:opacity-100 p-2 ml-1 text-slate-400 hover:text-red-500 transition"
-                title="מחק שיחה"
+                title={t("deleteChat")}
               >
                 <FaTrash size={12} />
               </button>

@@ -4,10 +4,13 @@ import PageHeader from "../GUIManagement/PageHeader";
 import Footer from "../GUIManagement/Footer";
 import PrimarySmallButton from "../GUIManagement/PrimarySmallButton";
 import ChatSidebar from "./ChatSidebar";
+import API_BASE_URL from "../Services/apiConfig";
+import { useLanguage } from "../contexts/languageContext";
 
 import { sendMessage, getChats, getChat, deleteChat } from "../Services/chatService";
 
 export default function BioBotPage() {
+  const { t } = useLanguage();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,9 +23,23 @@ export default function BioBotPage() {
   const [messages, setMessages] = useState([
     {
       sender: "bot",
-      text: "שלום, אני ביו־בוט. איך אוכל לעזור לך בנושא נהלים, טפסים או מידע אקדמי?",
+      text: t("bioBotWelcome"),
     },
   ]);
+
+  useEffect(() => {
+    setMessages((prev) => {
+      if (
+        prev.length !== 1 ||
+        prev[0]?.sender !== "bot" ||
+        prev[0]?.suggestedForm
+      ) {
+        return prev;
+      }
+
+      return [{ ...prev[0], text: t("bioBotWelcome") }];
+    });
+  }, [t]);
 
   useEffect(() => {
     async function loadChats() {
@@ -86,7 +103,7 @@ export default function BioBotPage() {
         ...prev,
         {
           sender: "bot",
-          text: "אירעה שגיאה בקבלת תשובה מהמערכת. נסה שוב.",
+          text: t("bioBotError"),
         },
       ]);
     } finally {
@@ -100,7 +117,7 @@ export default function BioBotPage() {
     setMessages([
       {
         sender: "bot",
-        text: "שלום, אני ביו־בוט. איך אוכל לעזור לך בנושא נהלים, טפסים או מידע אקדמי?",
+        text: t("bioBotWelcome"),
       },
     ]);
     setInput("");
@@ -130,7 +147,12 @@ export default function BioBotPage() {
       dir="rtl"
       className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col"
     >
-      <PageHeader title="ביו־בוט" buttonText="דף הבית" to="/home" />
+      <PageHeader
+        title={t("bioBotPage")}
+        buttonText={t("homeButton")}
+        to="/home"
+        showLanguageToggle
+      />
 
       <main className="flex-1 flex justify-center py-4 sm:py-8 px-4">
         <div className="w-full max-w-[1100px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex overflow-hidden">
@@ -145,11 +167,11 @@ export default function BioBotPage() {
           <section className="flex-1 flex flex-col">
             <div className="border-b border-slate-200 dark:border-slate-700 px-6 py-4">
               <h2 className="text-2xl font-bold text-brand truncate">
-                {activeChatTitle || "צ׳אט אקדמי חכם"}
+                {activeChatTitle || t("bioBotTitle")}
               </h2>
 
               <p className="text-slate-500 dark:text-slate-400 mt-1">
-                שאל שאלות על נהלים, טפסים, בחינות ומצב אקדמי
+                {t("bioBotSubtitle")}
               </p>
             </div>
 
@@ -174,15 +196,15 @@ export default function BioBotPage() {
                     {message.suggestedForm && (
                       <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600">
                         <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
-                          הטופס המתאים:
+                          {t("bioBotSuggestedForm")}
                         </p>
                         <a
-                          href={`${import.meta.env.VITE_API_URL}${message.suggestedForm.fileUrl}`}
+                          href={`${API_BASE_URL}${message.suggestedForm.fileUrl}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-2 bg-brand text-white text-sm font-bold px-4 py-2 rounded-xl hover:opacity-90 transition"
                         >
-                          📄 {message.suggestedForm.title} — פתח קובץ
+                          📄 {message.suggestedForm.title} - {t("bioBotOpenSuggestedForm")}
                         </a>
                       </div>
                     )}
@@ -214,12 +236,12 @@ export default function BioBotPage() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="כתוב שאלה לביו-בוט..."
+                placeholder={t("bioBotPlaceholder")}
                 disabled={loading}
                 className="flex-1 border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400 rounded-xl px-4 py-3 outline-none focus:border-brand"
               />
 
-              <PrimarySmallButton text={loading ? "חושב..." : "שליחה"} />
+              <PrimarySmallButton text={loading ? t("bioBotThinking") : t("bioBotSend")} />
             </form>
           </section>
         </div>

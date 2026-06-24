@@ -1,6 +1,7 @@
 import { getToken, apiFetch } from "./authService";
+import API_BASE_URL from "./apiConfig";
 
-const API_URL = `${import.meta.env.VITE_API_URL}/api/forms`;
+const API_URL = `${API_BASE_URL}/api/forms`;
 
 function authOnlyHeader() {
   const token = getToken();

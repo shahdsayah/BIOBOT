@@ -16,7 +16,7 @@ app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
 
-    const isLocalhost = origin === "http://localhost:5173";
+    const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
     const isVercel = /^https:\/\/.*\.vercel\.app$/.test(origin);
     const isCustomDomain = origin === process.env.FRONTEND_URL;
 

@@ -11,6 +11,14 @@ const academicTemplates = require("../data/academicTemplates");
 const randomGrade = require("../utils/randomGrade");
 //status codes: (400 - Bad Request) , (201 - Created),
 
+function yearFromSemester(semester) {
+  if (semester >= 1 && semester <= 2) return "א";
+  if (semester >= 3 && semester <= 4) return "ב";
+  if (semester >= 5 && semester <= 6) return "ג";
+  if (semester >= 7 && semester <= 8) return "ד";
+  return null;
+}
+
 //CREATE user -register
 router.post("/register", async (req, res) => {
   try {
@@ -22,6 +30,7 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const role = req.body.role || "student";
+    const semester = Number(req.body.semester);
 
     // Auto-assign a mock academic profile (year, schedule, completed
     // courses) — simulates pulling the student's record from the
@@ -31,10 +40,16 @@ router.post("/register", async (req, res) => {
     const academicFields = {};
 
     if (role !== "admin") {
-      const template =
-        academicTemplates[
-          Math.floor(Math.random() * academicTemplates.length)
-        ];
+      if (!Number.isInteger(semester) || semester < 1 || semester > 8) {
+        return res.status(400).json({ message: "Semester must be a number between 1 and 8" });
+      }
+
+      const mappedYear = yearFromSemester(semester);
+      const template = academicTemplates.find((item) => item.year === mappedYear);
+
+      if (!template) {
+        return res.status(500).json({ message: "No academic template found for selected semester" });
+      }
 
       academicFields.year = template.year;
       academicFields.schedule = template.schedule;
@@ -49,8 +64,10 @@ router.post("/register", async (req, res) => {
       );
     }
 
+    const { semester: _ignoredSemester, ...userPayload } = req.body;
+
     const user = await User.create({
-      ...req.body,
+      ...userPayload,
       password: hashedPassword,
       ...academicFields,
     });

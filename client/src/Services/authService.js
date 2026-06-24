@@ -3,7 +3,9 @@
    and backend server database
 */
 
-const API_URL = `${import.meta.env.VITE_API_URL}/api/users`;
+import API_BASE_URL from "./apiConfig";
+
+const API_URL = `${API_BASE_URL}/api/users`;
 
 // Safely parse JSON, return null if body is empty
 async function safeJson(response) {

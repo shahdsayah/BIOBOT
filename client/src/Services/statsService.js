@@ -1,6 +1,7 @@
 import { apiFetch, authHeaders } from "./authService";
+import API_BASE_URL from "./apiConfig";
 
-const API_URL = `${import.meta.env.VITE_API_URL}/api/stats`;
+const API_URL = `${API_BASE_URL}/api/stats`;
 
 export async function getStats() {
   const response = await apiFetch(API_URL, {

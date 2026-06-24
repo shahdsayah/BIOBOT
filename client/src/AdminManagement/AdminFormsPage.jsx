@@ -12,6 +12,7 @@ import {
   updateForm,
   deleteForm,
 } from "../Services/formsService";
+import API_BASE_URL from "../Services/apiConfig";
 
 export default function AdminFormsPage() {
   const [forms, setForms] = useState([]);
@@ -163,7 +164,7 @@ export default function AdminFormsPage() {
                               text="פתח"
                               onClick={() =>
                                 window.open(
-                                  `${import.meta.env.VITE_API_URL}${form.fileUrl}`,
+                                  `${API_BASE_URL}${form.fileUrl}`,
                                   "_blank"
                                 )
                               }

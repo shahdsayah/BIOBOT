@@ -17,6 +17,7 @@ export default function SignupPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [semester, setSemester] = useState("");
 
   const [error, setError] = useState("");
 
@@ -32,7 +33,7 @@ export default function SignupPage() {
         return;
       }
 
-      if (!firstName.trim() || !lastName.trim() || !email.trim() || !password.trim()) {
+      if (!firstName.trim() || !lastName.trim() || !email.trim() || !password.trim() || !semester) {
         setError("יש למלא את כל השדות.");
         return;
       }
@@ -43,6 +44,7 @@ export default function SignupPage() {
         email: email.trim().toLowerCase(),
         password,
         role: "student",
+        semester: Number(semester),
       };
 
       await registerUser(newUser);
@@ -103,6 +105,28 @@ export default function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+
+            <div className="w-full mb-5">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                סמסטר
+              </label>
+
+              <select
+                value={semester}
+                onChange={(e) => setSemester(e.target.value)}
+                className="w-full border-b-2 border-slate-300 dark:border-slate-600 dark:bg-transparent dark:text-slate-300 px-2 py-3 outline-none"
+              >
+                <option value="">בחר סמסטר (1-8)</option>
+                {Array.from({ length: 8 }, (_, index) => {
+                  const value = index + 1;
+                  return (
+                    <option key={value} value={value}>
+                      סמסטר {value}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
 
             <ArithmeticCaptcha ref={captchaRef} />
 
