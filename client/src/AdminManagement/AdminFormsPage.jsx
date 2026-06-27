@@ -13,8 +13,10 @@ import {
   deleteForm,
 } from "../Services/formsService";
 import API_BASE_URL from "../Services/apiConfig";
+import { useLanguage } from "../contexts/languageContext";
 
 export default function AdminFormsPage() {
+  const { t } = useLanguage();
   const [forms, setForms] = useState([]);
 
   const [title, setTitle] = useState("");
@@ -40,12 +42,8 @@ export default function AdminFormsPage() {
   }, []);
 
   const groupedForms = forms.reduce((groups, form) => {
-    const groupName = form.category || "ללא קטגוריה";
-
-    if (!groups[groupName]) {
-      groups[groupName] = [];
-    }
-
+    const groupName = form.category || t("adminFormsNoCategory");
+    if (!groups[groupName]) groups[groupName] = [];
     groups[groupName].push(form);
     return groups;
   }, {});
@@ -58,22 +56,19 @@ export default function AdminFormsPage() {
       setError("");
 
       const formData = new FormData();
-
       formData.append("title", title);
       formData.append("description", description);
       formData.append("category", category);
       formData.append("createdBy", "admin");
 
-      if (file) {
-        formData.append("file", file);
-      }
+      if (file) formData.append("file", file);
 
       if (editingId) {
         await updateForm(editingId, formData);
-        setMessage("הטופס עודכן בהצלחה");
+        setMessage(t("adminFormsUpdated"));
       } else {
         await createForm(formData);
-        setMessage("הטופס נוסף בהצלחה");
+        setMessage(t("adminFormsAdded"));
       }
 
       resetForm();
@@ -94,21 +89,16 @@ export default function AdminFormsPage() {
   }
 
   async function handleDelete(id) {
-    const confirmDelete = window.confirm("האם אתה בטוח שברצונך למחוק את הטופס?");
-
+    const confirmDelete = window.confirm(t("adminFormsDeleteConfirm"));
     if (!confirmDelete) return;
 
     try {
       setMessage("");
       setError("");
-
       await deleteForm(id);
-      setMessage("הטופס נמחק בהצלחה");
+      setMessage(t("adminFormsDeleted"));
       await loadForms();
-
-      if (editingId === id) {
-        resetForm();
-      }
+      if (editingId === id) resetForm();
     } catch (err) {
       setError(err.message);
     }
@@ -123,23 +113,23 @@ export default function AdminFormsPage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
-      <PageHeader title="ניהול טפסים" buttonText="לוח ניהול" to="/admin" />
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col">
+      <PageHeader title={t("adminFormsTitle")} buttonText={t("adminFormsBack")} to="/admin" showLanguageToggle />
 
       <main className="flex-1 py-10 px-8">
         <div className="max-w-[1250px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 order-1">
+          <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8 order-1">
             <h2 className="text-3xl font-bold text-brand mb-6">
-              טפסים קיימים
+              {t("adminFormsExisting")}
             </h2>
 
             {forms.length === 0 ? (
-              <p className="text-slate-500 dark:text-slate-400">אין טפסים במערכת.</p>
+              <p className="text-slate-500 dark:text-slate-200">{t("adminFormsNone")}</p>
             ) : (
               <div className="space-y-8">
                 {Object.entries(groupedForms).map(([categoryName, categoryForms]) => (
                   <div key={categoryName}>
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-600 pb-2 mb-4">
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-500 pb-2 mb-4">
                       {categoryName}
                     </h3>
 
@@ -147,40 +137,32 @@ export default function AdminFormsPage() {
                       {categoryForms.map((form) => (
                         <div
                           key={form._id}
-                          className="border border-slate-200 dark:border-slate-600 rounded-xl p-4 flex items-center justify-between gap-4"
+                          className="border border-slate-200 dark:border-slate-500 rounded-xl p-4 flex items-center justify-between gap-4"
                         >
                           <div>
                             <h4 className="font-bold text-slate-800 dark:text-slate-100">
                               {form.title}
                             </h4>
-
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            <p className="text-sm text-slate-500 dark:text-slate-200 mt-1">
                               {form.description}
                             </p>
                           </div>
 
                           <div className="flex gap-2 shrink-0">
                             <PrimarySmallButton
-                              text="פתח"
-                              onClick={() =>
-                                window.open(
-                                  `${API_BASE_URL}${form.fileUrl}`,
-                                  "_blank"
-                                )
-                              }
+                              text={t("adminFormsOpen")}
+                              onClick={() => window.open(`${API_BASE_URL}${form.fileUrl}`, "_blank")}
                             />
-
                             <PrimarySmallButton
-                              text="עדכן"
+                              text={t("adminFormsUpdateBtn")}
                               onClick={() => handleEdit(form)}
                             />
-
                             <button
                               type="button"
                               onClick={() => handleDelete(form._id)}
                               className="bg-red-600 text-white px-5 py-2 rounded-md font-bold hover:opacity-90 transition"
                             >
-                              מחק
+                              {t("adminFormsDeleteBtn")}
                             </button>
                           </div>
                         </div>
@@ -192,67 +174,64 @@ export default function AdminFormsPage() {
             )}
           </section>
 
-          <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 order-2">
+          <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8 order-2">
             <h2 className="text-3xl font-bold text-brand mb-3">
-              {editingId ? "עדכון טופס" : "הוספת טופס חדש"}
+              {editingId ? t("adminFormsEditTitle") : t("adminFormsAddTitle")}
             </h2>
 
-            <p className="text-slate-500 dark:text-slate-400 mb-8">
-              כאן ניתן להעלות קובצי PDF או Word למערכת
+            <p className="text-slate-500 dark:text-slate-200 mb-8">
+              {t("adminFormsSubtitle")}
             </p>
 
             <form onSubmit={handleSubmit}>
               <LabeledInput
-                label="שם הטופס"
+                label={t("adminFormsFieldName")}
                 type="text"
-                placeholder="לדוגמה: טופס ערעור"
+                placeholder={t("adminFormsFieldNamePlaceholder")}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
 
               <LabeledInput
-                label="תיאור"
+                label={t("adminFormsFieldDesc")}
                 type="text"
-                placeholder="תיאור קצר של הטופס"
+                placeholder={t("adminFormsFieldDescPlaceholder")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
 
               <LabeledInput
-                label="קטגוריה"
+                label={t("adminFormsFieldCategory")}
                 type="text"
-                placeholder="בחינות / אקדמי / משמעת"
+                placeholder={t("adminFormsFieldCategoryPlaceholder")}
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               />
 
               <div className="w-full mb-5">
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                  העלאת קובץ
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+                  {t("adminFormsFileLabel")}
                 </label>
 
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
                   onChange={(e) => setFile(e.target.files[0])}
-                  className="w-full border-b-2 border-slate-300 dark:border-slate-600 dark:text-slate-300 bg-transparent px-2 py-3 outline-none"
+                  className="w-full border-b-2 border-slate-300 dark:border-slate-500 dark:text-slate-200 bg-transparent px-2 py-3 outline-none"
                 />
 
                 {editingId && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                    אם לא תבחר קובץ חדש, הקובץ הקיים יישאר.
+                  <p className="text-xs text-slate-500 dark:text-slate-200 mt-2">
+                    {t("adminFormsFileNote")}
                   </p>
                 )}
               </div>
 
-              {message && (
-                <p className="text-green-600 text-sm mb-4">{message}</p>
-              )}
-
+              {message && <p className="text-green-600 text-sm mb-4">{message}</p>}
               {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
               <ActionButton
-                text={editingId ? "שמור עדכון" : "הוסף טופס"}
+                text={editingId ? t("adminFormsSaveBtn") : t("adminFormsAddBtn")}
                 type="submit"
               />
 
@@ -260,9 +239,9 @@ export default function AdminFormsPage() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="block mx-auto mt-4 text-sm text-slate-500 dark:text-slate-400 hover:text-brand"
+                  className="block mx-auto mt-4 text-sm text-slate-500 dark:text-slate-200 hover:text-brand"
                 >
-                  ביטול עריכה
+                  {t("adminFormsCancelEdit")}
                 </button>
               )}
             </form>

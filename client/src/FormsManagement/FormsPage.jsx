@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import PageHeader from "../GUIManagement/PageHeader";
 import Footer from "../GUIManagement/Footer";
 
@@ -56,7 +56,7 @@ export default function FormsPage() {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col">
       <PageHeader
         title={t("formsPage")}
         buttonText={t("homeButton")}
@@ -65,7 +65,7 @@ export default function FormsPage() {
       />
 
       <main className="flex-1 flex justify-center mt-10 px-4">
-        <div className="w-full max-w-[760px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8">
+        <div className="w-full max-w-[760px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 sm:p-8">
           
           <div className="flex gap-4 mb-8">
             <SearchBar 
@@ -81,10 +81,10 @@ export default function FormsPage() {
             />
           </div>
 
-          {loading && <p className="text-center text-slate-500 dark:text-slate-400">{t("formsLoading")}</p>}
+          {loading && <p className="text-center text-slate-500 dark:text-slate-200">{t("formsLoading")}</p>}
           {error && <p className="text-center text-red-500">{error}</p>}
           {!loading && !error && filteredForms.length === 0 && (
-            <p className="text-center text-slate-500 dark:text-slate-400">{t("formsEmpty")}</p>
+            <p className="text-center text-slate-500 dark:text-slate-200">{t("formsEmpty")}</p>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

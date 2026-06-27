@@ -10,22 +10,19 @@ const { handleLocalAnswer } = require("../utils/chatBotUtils");
 
 const router = express.Router();
 
-router.post("/", requireAuth, async (req, res) => {
+// Send message / create or continue a chat
+router.post("/", requireAuth, async (req, res, next) => {
   try {
     const { message, chatId } = req.body;
 
     if (!message || !message.trim()) {
-      return res.status(400).json({
-        message: "Message is required",
-      });
+      return res.status(400).json({ message: "Message is required" });
     }
 
     const user = await User.findById(req.user.id);
 
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const localAnswer = handleLocalAnswer(message, user);
@@ -34,15 +31,10 @@ router.post("/", requireAuth, async (req, res) => {
       let chat;
 
       if (chatId) {
-        chat = await Chat.findOne({
-          _id: chatId,
-          userId: user._id,
-        });
+        chat = await Chat.findOne({ _id: chatId, userId: user._id });
 
         if (!chat) {
-          return res.status(404).json({
-            message: "Chat not found",
-          });
+          return res.status(404).json({ message: "Chat not found" });
         }
 
         chat.messages.push(
@@ -63,11 +55,7 @@ router.post("/", requireAuth, async (req, res) => {
         });
       }
 
-      return res.json({
-        answer: localAnswer,
-        chat,
-        suggestedForm: null,
-      });
+      return res.json({ answer: localAnswer, chat, suggestedForm: null });
     }
 
     const [relevantKnowledge, forms] = await Promise.all([
@@ -142,56 +130,34 @@ ${relevantKnowledge}
     let existingChat = null;
 
     if (chatId) {
-      existingChat = await Chat.findOne({
-        _id: chatId,
-        userId: user._id,
-      });
+      existingChat = await Chat.findOne({ _id: chatId, userId: user._id });
     }
 
-    const existingMessages = existingChat
-      ? existingChat.messages.slice(-10)
-      : [];
+    const existingMessages = existingChat ? existingChat.messages.slice(-10) : [];
 
     const contents = [
-      {
-        role: "user",
-        parts: [{ text: systemPrompt }],
-      },
-      {
-        role: "model",
-        parts: [
-          {
-            text: "הבנתי. אני מוכן לענות לפי הנתונים האישיים ומאגר המידע.",
-          },
-        ],
-      },
+      { role: "user", parts: [{ text: systemPrompt }] },
+      { role: "model", parts: [{ text: "הבנתי. אני מוכן לענות לפי הנתונים האישיים ומאגר המידע." }] },
       ...existingMessages.map((m) => ({
         role: m.sender === "user" ? "user" : "model",
         parts: [{ text: m.text }],
       })),
-      {
-        role: "user",
-        parts: [{ text: message }],
-      },
+      { role: "user", parts: [{ text: message }] },
     ];
 
     const geminiResponse = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contents }),
       }
     );
 
     if (!geminiResponse.ok) {
-      const error = await geminiResponse.json();
-
-      return res.status(500).json({
-        message: "Gemini API request failed",
-        error: error.error?.message || "Unknown Gemini error",
+      const error = await geminiResponse.json().catch(() => ({}));
+      return res.status(502).json({
+        message: "AI service is unavailable. Please try again later.",
       });
     }
 
@@ -201,8 +167,7 @@ ${relevantKnowledge}
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
       "לא התקבלה תשובה מהמערכת.";
 
-    const suggestedForm =
-      forms.find((f) => botAnswer.includes(f.title)) || null;
+    const suggestedForm = forms.find((f) => botAnswer.includes(f.title)) || null;
 
     let chat;
 
@@ -210,9 +175,7 @@ ${relevantKnowledge}
       chat = existingChat;
 
       if (!chat) {
-        return res.status(404).json({
-          message: "Chat not found",
-        });
+        return res.status(404).json({ message: "Chat not found" });
       }
 
       chat.messages.push(
@@ -237,72 +200,88 @@ ${relevantKnowledge}
       answer: botAnswer,
       chat,
       suggestedForm: suggestedForm
-        ? {
-            title: suggestedForm.title,
-            fileUrl: suggestedForm.fileUrl,
-          }
+        ? { title: suggestedForm.title, fileUrl: suggestedForm.fileUrl }
         : null,
     });
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to process chat message",
-      error: err.message,
-    });
+    next(err);
   }
 });
 
-router.get("/", requireAuth, async (req, res) => {
+// Get all chats for current user
+router.get("/", requireAuth, async (req, res, next) => {
   try {
-    const chats = await Chat.find({
-      userId: req.user.id,
-    }).sort({ updatedAt: -1 });
-
+    const chats = await Chat.find({ userId: req.user.id }).sort({ updatedAt: -1 });
     res.json(chats);
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to load chats",
-      error: err.message,
-    });
+    next(err);
   }
 });
 
-router.get("/:id", requireAuth, async (req, res) => {
+// Get one chat by ID
+router.get("/:id", requireAuth, async (req, res, next) => {
   try {
-    const chat = await Chat.findOne({
-      _id: req.params.id,
-      userId: req.user.id,
-    });
+    const chat = await Chat.findOne({ _id: req.params.id, userId: req.user.id });
 
     if (!chat) {
-      return res.status(404).json({
-        message: "Chat not found",
-      });
+      return res.status(404).json({ message: "Chat not found" });
     }
 
     res.json(chat);
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to load chat",
-      error: err.message,
-    });
+    next(err);
   }
 });
 
-router.delete("/:id", requireAuth, async (req, res) => {
+// Submit like/dislike feedback on a bot message
+router.patch("/:chatId/messages/:messageId/feedback", requireAuth, async (req, res, next) => {
   try {
-    await Chat.findOneAndDelete({
+    const { feedback } = req.body;
+
+    if (!["like", "dislike", null].includes(feedback)) {
+      return res.status(400).json({ message: "Feedback must be 'like', 'dislike', or null" });
+    }
+
+    const chat = await Chat.findOne({ _id: req.params.chatId, userId: req.user.id });
+
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+
+    const message = chat.messages.id(req.params.messageId);
+
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    if (message.sender !== "bot") {
+      return res.status(400).json({ message: "Feedback can only be given on bot messages" });
+    }
+
+    message.feedback = feedback;
+    await chat.save();
+
+    res.json({ messageId: req.params.messageId, feedback });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Delete chat
+router.delete("/:id", requireAuth, async (req, res, next) => {
+  try {
+    const deleted = await Chat.findOneAndDelete({
       _id: req.params.id,
       userId: req.user.id,
     });
 
-    res.json({
-      message: "Chat deleted successfully",
-    });
+    if (!deleted) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+
+    res.json({ message: "Chat deleted successfully" });
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to delete chat",
-      error: err.message,
-    });
+    next(err);
   }
 });
 

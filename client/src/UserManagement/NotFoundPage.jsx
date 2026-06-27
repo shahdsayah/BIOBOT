@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import PageHeader from "../GUIManagement/PageHeader";
@@ -27,7 +27,7 @@ export default function NotFoundPage() {
   }, [t, user]);
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col">
       <PageHeader
         title={t("notFoundTitle")}
         buttonText={primaryAction.label}
@@ -36,7 +36,7 @@ export default function NotFoundPage() {
       />
 
       <main className="flex-1 flex items-center justify-center px-4 py-10">
-        <div className="w-full max-w-3xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 sm:p-12 text-center">
+        <div className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8 sm:p-12 text-center">
           <p className="text-8xl sm:text-9xl font-extrabold text-brand leading-none">
             404
           </p>
@@ -45,7 +45,7 @@ export default function NotFoundPage() {
             {t("notFoundHeading")}
           </h2>
 
-          <p className="mt-4 text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+          <p className="mt-4 text-lg text-slate-600 dark:text-slate-200 max-w-xl mx-auto">
             {t("notFoundDescription")}
           </p>
 
@@ -58,7 +58,7 @@ export default function NotFoundPage() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="w-full border border-slate-300 dark:border-slate-600 dark:text-slate-200 py-3 font-bold rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+              className="w-full border border-slate-300 dark:border-slate-500 dark:text-slate-200 py-3 font-bold rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition"
             >
               {t("goBack")}
             </button>

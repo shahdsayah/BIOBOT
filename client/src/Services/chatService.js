@@ -3,7 +3,15 @@ import API_BASE_URL from "./apiConfig";
 
 const API_URL = `${API_BASE_URL}/api/chats`;
 
-// Send message to Gemini
+async function parseError(response) {
+  try {
+    const data = await response.json();
+    return data.message || "Something went wrong";
+  } catch {
+    return "Something went wrong";
+  }
+}
+
 export async function sendMessage(message, chatId = null) {
   const response = await apiFetch(API_URL, {
     method: "POST",
@@ -11,57 +19,56 @@ export async function sendMessage(message, chatId = null) {
     body: JSON.stringify({ message, chatId }),
   });
 
-  const data = await response.json();
-
   if (!response.ok) {
-    throw new Error(data.message || "Failed to send message");
+    throw new Error(await parseError(response));
   }
 
-  return data;
+  return response.json();
 }
 
-// Get all chats
 export async function getChats() {
-  const response = await apiFetch(API_URL, {
-    headers: authHeaders(),
-  });
-
-  const data = await response.json();
+  const response = await apiFetch(API_URL, { headers: authHeaders() });
 
   if (!response.ok) {
-    throw new Error(data.message || "Failed to load chats");
+    throw new Error(await parseError(response));
   }
 
-  return data;
+  return response.json();
 }
 
-// Get one chat
 export async function getChat(chatId) {
-  const response = await apiFetch(`${API_URL}/${chatId}`, {
-    headers: authHeaders(),
-  });
-
-  const data = await response.json();
+  const response = await apiFetch(`${API_URL}/${chatId}`, { headers: authHeaders() });
 
   if (!response.ok) {
-    throw new Error(data.message || "Failed to load chat");
+    throw new Error(await parseError(response));
   }
 
-  return data;
+  return response.json();
 }
 
-// Delete chat
+export async function submitFeedback(chatId, messageId, feedback) {
+  const response = await apiFetch(`${API_URL}/${chatId}/messages/${messageId}/feedback`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify({ feedback }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseError(response));
+  }
+
+  return response.json();
+}
+
 export async function deleteChat(chatId) {
   const response = await apiFetch(`${API_URL}/${chatId}`, {
     method: "DELETE",
     headers: authHeaders(),
   });
 
-  const data = await response.json();
-
   if (!response.ok) {
-    throw new Error(data.message || "Failed to delete chat");
+    throw new Error(await parseError(response));
   }
 
-  return data;
+  return response.json();
 }

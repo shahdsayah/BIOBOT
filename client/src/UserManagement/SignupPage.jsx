@@ -1,9 +1,11 @@
-import { useRef, useState } from "react";
+﻿import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../contexts/languageContext";
 
 import LabeledInput from "../GUIManagement/LabeledInput";
 import ActionButton from "../GUIManagement/ActionButton";
 import ArithmeticCaptcha from "../GUIManagement/ArithmeticCaptcha";
+import PageHeader from "../GUIManagement/PageHeader";
 
 import { registerUser } from "../Services/authService";
 
@@ -11,6 +13,7 @@ import logo from "../assets/logo.jpg";
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const captchaRef = useRef(null);
 
   const [firstName, setFirstName] = useState("");
@@ -34,7 +37,7 @@ export default function SignupPage() {
       }
 
       if (!firstName.trim() || !lastName.trim() || !email.trim() || !password.trim() || !semester) {
-        setError("יש למלא את כל השדות.");
+        setError(t("signupFieldsRequired"));
         return;
       }
 
@@ -61,67 +64,69 @@ export default function SignupPage() {
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4"
+      className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col"
     >
-      <div className="w-full max-w-[1000px] min-h-[600px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col sm:flex-row">
+      <PageHeader title="BIOBOT 2.0" showLanguageToggle />
+      <div className="flex-1 flex items-center justify-center p-4">
+      <div className="w-full max-w-[1000px] min-h-[600px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col sm:flex-row">
         <section className="w-full sm:w-3/5 p-8 sm:p-14 flex flex-col justify-center">
           <h2 className="text-4xl font-bold text-brand mb-3">
-            הרשמה
+            {t("signupTitle")}
           </h2>
 
-          <p className="text-slate-600 dark:text-slate-400 mb-8">
-            צרו חשבון חדש במערכת ביו־בוט
+          <p className="text-slate-600 dark:text-slate-200 mb-8">
+            {t("signupWelcome")}
           </p>
 
           <form onSubmit={handleSignup}>
             <LabeledInput
-              label="שם פרטי"
+              label={t("signupFirstName")}
               type="text"
-              placeholder="הכנס שם פרטי"
+              placeholder={t("signupFirstNamePlaceholder")}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
 
             <LabeledInput
-              label="שם משפחה"
+              label={t("signupLastName")}
               type="text"
-              placeholder="הכנס שם משפחה"
+              placeholder={t("signupLastNamePlaceholder")}
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
 
             <LabeledInput
-              label="אימייל"
+              label={t("signupEmail")}
               type="email"
-              placeholder="הכנס אימייל"
+              placeholder={t("signupEmailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
 
             <LabeledInput
-              label="סיסמה"
+              label={t("signupPassword")}
               type="password"
-              placeholder="הכנס סיסמה"
+              placeholder={t("signupPasswordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
 
             <div className="w-full mb-5">
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                סמסטר
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+                {t("signupSemester")}
               </label>
 
               <select
                 value={semester}
                 onChange={(e) => setSemester(e.target.value)}
-                className="w-full border-b-2 border-slate-300 dark:border-slate-600 dark:bg-transparent dark:text-slate-300 px-2 py-3 outline-none"
+                className="w-full border-b-2 border-slate-300 dark:border-slate-500 dark:bg-transparent dark:text-slate-200 px-2 py-3 outline-none"
               >
-                <option value="">בחר סמסטר (1-8)</option>
+                <option value="">{t("signupSemesterPlaceholder")}</option>
                 {Array.from({ length: 8 }, (_, index) => {
                   const value = index + 1;
                   return (
                     <option key={value} value={value}>
-                      סמסטר {value}
+                      {t("signupSemesterOption", { n: value })}
                     </option>
                   );
                 })}
@@ -136,14 +141,14 @@ export default function SignupPage() {
               </p>
             )}
 
-            <ActionButton text="יצירת חשבון" type="submit" />
+            <ActionButton text={t("signupButton")} type="submit" />
 
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="block mx-auto mt-5 text-sm text-slate-500 dark:text-slate-400 hover:text-brand"
+              className="block mx-auto mt-5 text-sm text-slate-500 dark:text-slate-200 hover:text-brand"
             >
-              כבר יש לך חשבון? התחברות
+              {t("signupHaveAccount")}
             </button>
           </form>
         </section>
@@ -158,13 +163,14 @@ export default function SignupPage() {
           <h1 className="text-5xl font-extrabold mb-4">BIOBOT 2.0</h1>
 
           <p className="text-2xl font-bold text-center">
-            הצטרפות למערכת ביו־בוט
+            {t("signupBrandWelcome")}
           </p>
 
           <p className="text-center mt-4 text-white/90">
-            גישה מהירה למידע אקדמי, נהלים וטפסים במקום אחד
+            {t("signupBrandSub")}
           </p>
         </section>
+      </div>
       </div>
     </div>
   );

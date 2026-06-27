@@ -1,61 +1,60 @@
-const { normalizeHebrewText } = require("./hebrewTextUtils");
+const { normalizeHebrewText, includesHebrewMatch } = require("./hebrewTextUtils");
 
 const TOTAL_DEGREE_CREDITS = 165;
 
 function detectIntent(message = "") {
-  const text = normalizeHebrewText(message);
+  const match = (keyword) => includesHebrewMatch(message, keyword);
 
   if (
-    text.includes("מצב אקדמי") ||
-    text.includes("מצב קדמי") ||
-    text.includes("תקין") ||
-    text.includes("על תנאי")
+    match("מצב אקדמי") ||
+    match("מצב קדמי") ||
+    match("תקין") ||
+    match("על תנאי") ||
+    match("אקדמי")
   ) {
     return "academic_status";
   }
 
   if (
-    text.includes("ממוצע") ||
-    text.includes("ציונ") ||
-    text.includes("ממוצע ציונ")
+    match("ממוצע") ||
+    match("ציון") ||
+    match("ממוצע ציונים")
   ) {
     return "average";
   }
 
   if (
-    text.includes("נקודות זכות") ||
-    text.includes("נקז") ||
-    text.includes("נז") ||
-    text.includes("כמה נשאר") ||
-    text.includes("לסיום התואר")
+    match("נקודות זכות") ||
+    match("נקז") ||
+    match("כמה נשאר") ||
+    match("לסיום התואר")
   ) {
     return "credits";
   }
 
   if (
-    text.includes("טופס") ||
-    text.includes("טפס") ||
-    text.includes("מסמך") ||
-    text.includes("בקשה")
+    match("טופס") ||
+    match("מסמך") ||
+    match("בקשה")
   ) {
     return "forms";
   }
 
   if (
-    text.includes("ערעור") ||
-    text.includes("בחינה") ||
-    text.includes("מבחן") ||
-    text.includes("מועד")
+    match("ערעור") ||
+    match("בחינה") ||
+    match("מבחן") ||
+    match("מועד")
   ) {
     return "exam_procedure";
   }
 
   if (
-    text.includes("יועץ") ||
-    text.includes("למי לפנות") ||
-    text.includes("עם מי לדבר") ||
-    text.includes("מזכירות") ||
-    text.includes("דקנט")
+    match("יועץ") ||
+    match("למי לפנות") ||
+    match("עם מי לדבר") ||
+    match("מזכירות") ||
+    match("דקנט")
   ) {
     return "contact_advisor";
   }

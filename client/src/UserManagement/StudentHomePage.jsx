@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+﻿import { useNavigate } from "react-router-dom";
 
 import { FaUser, FaRobot, FaFileAlt } from "react-icons/fa";
 
@@ -23,7 +23,7 @@ export default function StudentHomePage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col">
       <PageHeader
         title={t("homePage")}
         buttonText={t("logout")}
@@ -42,7 +42,7 @@ export default function StudentHomePage() {
           {t("shalom")} {student?.firstName || t("studentFallback")} 👋
         </h1>
 
-        <p className="text-slate-600 dark:text-slate-400 text-lg mb-12 text-center">
+        <p className="text-slate-600 dark:text-slate-200 text-lg mb-12 text-center">
           {t("welcome")}
         </p>
 

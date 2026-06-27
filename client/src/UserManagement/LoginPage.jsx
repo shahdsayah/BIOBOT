@@ -1,15 +1,18 @@
-import { useRef, useState } from "react";
+﻿import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../contexts/languageContext";
 
 import LabeledInput from "../GUIManagement/LabeledInput";
 import ActionButton from "../GUIManagement/ActionButton";
 import ArithmeticCaptcha from "../GUIManagement/ArithmeticCaptcha";
+import PageHeader from "../GUIManagement/PageHeader";
 
 import { loginUser } from "../Services/authService";
 import logo from "../assets/logo.jpg";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const captchaRef = useRef(null);
 
   const [email, setEmail] = useState("");
@@ -30,7 +33,7 @@ export default function LoginPage() {
       }
 
       if (!email.trim() || !password.trim()) {
-        setError("יש להזין אימייל וסיסמה.");
+        setError(t("loginFieldsRequired"));
         return;
       }
 
@@ -52,31 +55,33 @@ export default function LoginPage() {
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center p-4"
+      className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col"
     >
-      <div className="w-full max-w-[1000px] min-h-[600px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col sm:flex-row">
+      <PageHeader title="BIOBOT 2.0" showLanguageToggle />
+      <div className="flex-1 flex items-center justify-center p-4">
+      <div className="w-full max-w-[1000px] min-h-[600px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col sm:flex-row">
         <section className="w-full sm:w-3/5 p-8 sm:p-14 flex flex-col justify-center">
           <h2 className="text-4xl font-bold text-brand mb-3">
-            התחברות
+            {t("loginTitle")}
           </h2>
 
-          <p className="text-slate-600 dark:text-slate-400 mb-10">
-            ברוכים הבאים למערכת ביו־בוט
+          <p className="text-slate-600 dark:text-slate-200 mb-10">
+            {t("loginWelcome")}
           </p>
 
           <form onSubmit={handleLogin}>
             <LabeledInput
-              label="אימייל"
+              label={t("loginEmail")}
               type="email"
-              placeholder="הכנס אימייל"
+              placeholder={t("loginEmailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
 
             <LabeledInput
-              label="סיסמה"
+              label={t("loginPassword")}
               type="password"
-              placeholder="הכנס סיסמה"
+              placeholder={t("loginPasswordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -89,14 +94,14 @@ export default function LoginPage() {
               </p>
             )}
 
-            <ActionButton text="התחברות" type="submit" />
+            <ActionButton text={t("loginButton")} type="submit" />
 
             <button
               type="button"
               onClick={() => navigate("/signup")}
-              className="block mx-auto mt-5 text-sm text-slate-500 dark:text-slate-400 hover:text-brand"
+              className="block mx-auto mt-5 text-sm text-slate-500 dark:text-slate-200 hover:text-brand"
             >
-              יצירת חשבון חדש
+              {t("loginCreateAccount")}
             </button>
           </form>
         </section>
@@ -113,13 +118,14 @@ export default function LoginPage() {
           </h1>
 
           <p className="text-2xl font-bold text-center">
-            ברוכים הבאים למערכת ביו־בוט
+            {t("loginBrandWelcome")}
           </p>
 
           <p className="text-center mt-4 text-white/90">
-            המידע האקדמי שלך, פשוט ונגיש במקום אחד
+            {t("loginBrandSub")}
           </p>
         </section>
+      </div>
       </div>
     </div>
   );

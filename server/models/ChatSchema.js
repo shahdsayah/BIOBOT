@@ -40,6 +40,12 @@ const ChatSchema = new mongoose.Schema(
           default: "",
         },
 
+        feedback: {
+          type: String,
+          enum: ["like", "dislike", null],
+          default: null,
+        },
+
         createdAt: {
           type: Date,
           default: Date.now,

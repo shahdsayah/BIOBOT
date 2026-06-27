@@ -1,4 +1,4 @@
-import PrimarySmallButton from "../GUIManagement/PrimarySmallButton";
+﻿import PrimarySmallButton from "../GUIManagement/PrimarySmallButton";
 import { FaTrash } from "react-icons/fa";
 import { useLanguage } from "../contexts/languageContext";
 
@@ -12,10 +12,10 @@ export default function ChatSidebar({
   const { t, language } = useLanguage();
 
   return (
-    <aside className="hidden sm:flex flex-col w-72 bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 p-4">
+    <aside className="hidden sm:flex flex-col w-72 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-500 p-4">
       <PrimarySmallButton text={t("newChat")} onClick={onNewChat} />
 
-      <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 mt-6 mb-3">
+      <h3 className="text-sm font-bold text-slate-500 dark:text-slate-200 mt-6 mb-3">
         {t("chatHistory")}
       </h3>
 
@@ -29,7 +29,7 @@ export default function ChatSidebar({
               className={`group flex items-center gap-1 rounded-lg border transition ${
                 activeChatId === chat._id
                   ? "bg-brand/10 border-brand"
-                  : "border-transparent hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-200 dark:hover:border-slate-600"
+                  : "border-transparent hover:bg-slate-100 dark:hover:bg-slate-800 hover:border-slate-200 dark:hover:border-slate-500"
               }`}
             >
               <button
@@ -39,7 +39,7 @@ export default function ChatSidebar({
                 <div className={`font-semibold truncate ${
                   activeChatId === chat._id
                     ? "text-brand"
-                    : "text-slate-700 dark:text-slate-300"
+                    : "text-slate-700 dark:text-slate-200"
                 }`}>
                   {chat.title || t("newChat")}
                 </div>
@@ -65,7 +65,7 @@ export default function ChatSidebar({
         )}
       </div>
 
-      <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+      <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-500">
         <p className="text-xs text-slate-400 text-center">BIOBOT 2.0</p>
       </div>
     </aside>

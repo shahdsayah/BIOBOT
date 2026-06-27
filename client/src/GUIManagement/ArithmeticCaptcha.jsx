@@ -1,6 +1,8 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { useLanguage } from "../contexts/languageContext";
 
 const ArithmeticCaptcha = forwardRef(function ArithmeticCaptcha(props, ref) {
+  const { t } = useLanguage();
   const [challenge, setChallenge] = useState("");
   const [expectedAnswer, setExpectedAnswer] = useState(null);
   const [userAnswer, setUserAnswer] = useState("");
@@ -50,14 +52,14 @@ const ArithmeticCaptcha = forwardRef(function ArithmeticCaptcha(props, ref) {
 
   function validateCaptcha() {
     if (incorrectAttempts >= maxIncorrectAttempts) {
-      setError("חרגת ממספר הניסיונות המותר. רענן את השאלה ונסה שוב.");
+      setError(t("captchaMaxAttempts"));
       return false;
     }
 
     const numericAnswer = Number(userAnswer);
 
     if (userAnswer.trim() === "" || Number.isNaN(numericAnswer)) {
-      setError("יש להזין תשובה מספרית.");
+      setError(t("captchaNotNumber"));
       return false;
     }
 
@@ -65,9 +67,9 @@ const ArithmeticCaptcha = forwardRef(function ArithmeticCaptcha(props, ref) {
       const newAttempts = incorrectAttempts + 1;
       setIncorrectAttempts(newAttempts);
       if (newAttempts >= maxIncorrectAttempts) {
-        setError("חרגת ממספר הניסיונות המותר. לחץ רענון לקבלת שאלה חדשה.");
+        setError(t("captchaMaxAttemptsRefresh"));
       } else {
-        setError(`תשובת CAPTCHA שגויה. נשארו ${maxIncorrectAttempts - newAttempts} ניסיונות.`);
+        setError(t("captchaWrongAnswer", { remaining: maxIncorrectAttempts - newAttempts }));
       }
       return false;
     }
@@ -86,12 +88,12 @@ const ArithmeticCaptcha = forwardRef(function ArithmeticCaptcha(props, ref) {
 
   return (
     <div className="mb-5">
-      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-        אימות CAPTCHA
+      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
+        {t("captchaLabel")}
       </label>
 
       <div className="flex items-center gap-4 mb-3">
-        <span className="text-lg font-bold text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-700 px-4 py-2 rounded-md">
+        <span className="text-lg font-bold text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-md">
           {challenge}
         </span>
 
@@ -99,7 +101,7 @@ const ArithmeticCaptcha = forwardRef(function ArithmeticCaptcha(props, ref) {
           type="button"
           onClick={refreshCaptcha}
           title="Refresh CAPTCHA"
-          className="border border-slate-300 dark:border-slate-600 dark:text-slate-300 rounded-md px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+          className="border border-slate-300 dark:border-slate-500 dark:text-slate-200 rounded-md px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
         >
           🔄
         </button>
@@ -109,8 +111,8 @@ const ArithmeticCaptcha = forwardRef(function ArithmeticCaptcha(props, ref) {
         type="text"
         value={userAnswer}
         onChange={(e) => setUserAnswer(e.target.value)}
-        placeholder="הכנס את התשובה"
-        className="w-full border-b-2 border-slate-300 dark:border-slate-600 bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-2 py-3 outline-none focus:border-brand"
+        placeholder={t("captchaPlaceholder")}
+        className="w-full border-b-2 border-slate-300 dark:border-slate-500 bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-2 py-3 outline-none focus:border-brand"
       />
 
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}

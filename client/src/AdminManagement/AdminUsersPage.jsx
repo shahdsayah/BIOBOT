@@ -11,8 +11,10 @@ import {
   updateUser,
   deleteUser,
 } from "../Services/authService";
+import { useLanguage } from "../contexts/languageContext";
 
 export default function AdminUsersPage() {
+  const { t } = useLanguage();
   const [search, setSearch] = useState("");
   const [sortType, setSortType] = useState("newest");
   const [users, setUsers] = useState([]);
@@ -39,11 +41,9 @@ export default function AdminUsersPage() {
 
   async function handleChangeRole(user) {
     const newRole = user.role === "admin" ? "student" : "admin";
-
     const confirmChange = window.confirm(
-      `האם לשנות את ההרשאה של ${user.firstName} ${user.lastName} ל-${newRole}?`
+      t("adminUsersConfirmRole", { name: `${user.firstName} ${user.lastName}`, role: newRole })
     );
-
     if (!confirmChange) return;
 
     try {
@@ -57,14 +57,13 @@ export default function AdminUsersPage() {
 
   async function handleDeleteUser(user) {
     if (currentUser?._id === user._id) {
-      alert("לא ניתן למחוק את המשתמש שמחובר כרגע.");
+      alert(t("adminUsersCannotDeleteSelf"));
       return;
     }
 
     const confirmDelete = window.confirm(
-      `האם למחוק את המשתמש ${user.firstName} ${user.lastName}?`
+      t("adminUsersConfirmDelete", { name: `${user.firstName} ${user.lastName}` })
     );
-
     if (!confirmDelete) return;
 
     try {
@@ -83,28 +82,18 @@ export default function AdminUsersPage() {
     .filter((user) => {
       const fullName = `${user.firstName || ""} ${user.lastName || ""}`;
       const email = user.email || "";
-
       return (
         fullName.toLowerCase().includes(search.toLowerCase()) ||
         email.toLowerCase().includes(search.toLowerCase())
       );
     })
     .sort((a, b) => {
-      if (sortType === "name") {
+      if (sortType === "name")
         return `${a.firstName || ""} ${a.lastName || ""}`.localeCompare(
-          `${b.firstName || ""} ${b.lastName || ""}`,
-          "he"
+          `${b.firstName || ""} ${b.lastName || ""}`, "he"
         );
-      }
-
-      if (sortType === "newest") {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      }
-
-      if (sortType === "oldest") {
-        return new Date(a.createdAt) - new Date(b.createdAt);
-      }
-
+      if (sortType === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sortType === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
       return 0;
     });
 
@@ -112,23 +101,23 @@ export default function AdminUsersPage() {
     return (
       <div
         key={user._id}
-        className="border border-slate-200 dark:border-slate-600 rounded-xl p-4 flex items-center justify-between gap-4"
+        className="border border-slate-200 dark:border-slate-500 rounded-xl p-4 flex items-center justify-between gap-4"
       >
         <div>
           <h3 className="font-bold text-slate-800 dark:text-slate-100">
             {user.firstName} {user.lastName}
           </h3>
 
-          <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-200">{user.email}</p>
 
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-            נוצר בתאריך:{" "}
+            {t("adminUsersCreatedAt")}{" "}
             {user.createdAt
               ? new Date(user.createdAt).toLocaleDateString("he-IL")
-              : "לא זמין"}
+              : t("adminUsersNotAvailable")}
           </p>
 
-          <span className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-700 dark:text-slate-300 px-3 py-1 rounded-full text-sm mt-3">
+          <span className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 dark:text-slate-200 px-3 py-1 rounded-full text-sm mt-3">
             {icon}
             {roleLabel}
           </span>
@@ -140,7 +129,7 @@ export default function AdminUsersPage() {
             onClick={() => handleChangeRole(user)}
             className="bg-brand text-white px-4 py-2 rounded-md font-bold hover:opacity-90 transition"
           >
-            שינוי הרשאה
+            {t("adminUsersChangeRole")}
           </button>
 
           <button
@@ -148,7 +137,7 @@ export default function AdminUsersPage() {
             onClick={() => handleDeleteUser(user)}
             className="bg-red-600 text-white px-4 py-2 rounded-md font-bold hover:opacity-90 transition"
           >
-            מחק
+            {t("adminUsersDeleteBtn")}
           </button>
         </div>
       </div>
@@ -156,37 +145,35 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
-      <PageHeader title="ניהול משתמשים" buttonText="לוח ניהול" to="/admin" />
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col">
+      <PageHeader title={t("adminUsersTitle")} buttonText={t("adminUsersBack")} to="/admin" showLanguageToggle />
 
       <main className="flex-1 p-4 sm:p-8">
         <div className="max-w-[1250px] mx-auto">
           {loading && (
-            <p className="text-slate-500 dark:text-slate-400 text-center">טוען משתמשים...</p>
+            <p className="text-slate-500 dark:text-slate-200 text-center">{t("adminUsersLoading")}</p>
           )}
 
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
           {!loading && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
+              <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <FaUserGraduate className="text-4xl text-brand" />
-
                   <div>
                     <h1 className="text-3xl font-bold text-brand">
-                      סטודנטים
+                      {t("adminUsersStudentsTitle")}
                     </h1>
-
-                    <p className="text-slate-500 dark:text-slate-400">
-                      חיפוש ומיון משתמשים מסוג סטודנט
+                    <p className="text-slate-500 dark:text-slate-200">
+                      {t("adminUsersStudentsDesc")}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-4 mb-6">
                   <SearchBar
-                    placeholder="חיפוש לפי שם או אימייל..."
+                    placeholder={t("adminUsersSearchPlaceholder")}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -194,47 +181,41 @@ export default function AdminUsersPage() {
                   <select
                     value={sortType}
                     onChange={(e) => setSortType(e.target.value)}
-                    className="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-xl px-4 py-2 outline-none"
+                    className="border border-slate-300 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-200 rounded-xl px-4 py-2 outline-none"
                   >
-                    <option value="newest">מהחדש לישן</option>
-                    <option value="oldest">מהישן לחדש</option>
-                    <option value="name">מיון אלפביתי</option>
+                    <option value="newest">{t("adminUsersSortNewest")}</option>
+                    <option value="oldest">{t("adminUsersSortOldest")}</option>
+                    <option value="name">{t("adminUsersSortName")}</option>
                   </select>
                 </div>
 
                 <div className="space-y-4">
                   {students.length === 0 ? (
-                    <p className="text-slate-500 dark:text-slate-400">לא נמצאו סטודנטים.</p>
+                    <p className="text-slate-500 dark:text-slate-200">{t("adminUsersNoStudents")}</p>
                   ) : (
-                    students.map((user) =>
-                      renderUserCard(user, <FaUserGraduate />, "student")
-                    )
+                    students.map((user) => renderUserCard(user, <FaUserGraduate />, "student"))
                   )}
                 </div>
               </section>
 
-              <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8">
+              <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <FaUsers className="text-4xl text-brand" />
-
                   <div>
                     <h1 className="text-3xl font-bold text-brand">
-                      מנהלים
+                      {t("adminUsersAdminsTitle")}
                     </h1>
-
-                    <p className="text-slate-500 dark:text-slate-400">
-                      משתמשים בעלי הרשאות ניהול
+                    <p className="text-slate-500 dark:text-slate-200">
+                      {t("adminUsersAdminsDesc")}
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   {admins.length === 0 ? (
-                    <p className="text-slate-500 dark:text-slate-400">אין מנהלים במערכת.</p>
+                    <p className="text-slate-500 dark:text-slate-200">{t("adminUsersNoAdmins")}</p>
                   ) : (
-                    admins.map((user) =>
-                      renderUserCard(user, <FaUserShield />, "admin")
-                    )
+                    admins.map((user) => renderUserCard(user, <FaUserShield />, "admin"))
                   )}
                 </div>
               </section>

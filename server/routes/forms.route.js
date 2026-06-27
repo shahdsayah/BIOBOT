@@ -35,20 +35,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Upload new form by admin
-router.post("/", requireAdmin, upload.single("file"), async (req, res) => {
+router.post("/", requireAdmin, upload.single("file"), async (req, res, next) => {
   try {
     const { title, description, category, createdBy } = req.body;
 
     if (!title || !description) {
-      return res.status(400).json({
-        message: "Title and description are required",
-      });
+      return res.status(400).json({ message: "Title and description are required" });
     }
 
     if (!req.file) {
-      return res.status(400).json({
-        message: "File is required",
-      });
+      return res.status(400).json({ message: "File is required" });
     }
 
     const form = await Form.create({
@@ -62,79 +58,59 @@ router.post("/", requireAdmin, upload.single("file"), async (req, res) => {
       createdBy: createdBy || "admin",
     });
 
-    res.status(201).json({
-      message: "Form uploaded successfully",
-      form,
-    });
+    res.status(201).json({ message: "Form uploaded successfully", form });
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to upload form",
-      error: err.message,
-    });
+    next(err);
   }
 });
 
 // Get all forms for student/admin
-router.get("/", requireAuth, async (req, res) => {
+router.get("/", requireAuth, async (req, res, next) => {
   try {
     const { search } = req.query;
 
     let forms = await Form.find().sort({ createdAt: -1 });
 
     if (search && search.trim() !== "") {
-      forms = forms.filter((form) => {
-        return (
-          includesHebrewMatch(form.title, search) ||
-          includesHebrewMatch(form.description, search) ||
-          includesHebrewMatch(form.category, search)
-        );
-      });
+      forms = forms.filter((form) =>
+        includesHebrewMatch(form.title, search) ||
+        includesHebrewMatch(form.description, search) ||
+        includesHebrewMatch(form.category, search)
+      );
     }
 
     res.json(forms);
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to load forms",
-      error: err.message,
-    });
+    next(err);
   }
 });
 
 // Get one form by ID
-router.get("/:id", requireAuth, async (req, res) => {
+router.get("/:id", requireAuth, async (req, res, next) => {
   try {
     const form = await Form.findById(req.params.id);
 
     if (!form) {
-      return res.status(404).json({
-        message: "Form not found",
-      });
+      return res.status(404).json({ message: "Form not found" });
     }
 
     res.json(form);
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to load form",
-      error: err.message,
-    });
+    next(err);
   }
 });
 
 // Delete form by admin
-router.delete("/:id", requireAdmin, async (req, res) => {
+router.delete("/:id", requireAdmin, async (req, res, next) => {
   try {
     const form = await Form.findById(req.params.id);
 
     if (!form) {
-      return res.status(404).json({
-        message: "Form not found",
-      });
+      return res.status(404).json({ message: "Form not found" });
     }
 
-    // Delete uploaded file from uploads folder
     if (form.fileUrl) {
       const filePath = path.join(__dirname, "..", form.fileUrl);
-
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
@@ -142,30 +118,21 @@ router.delete("/:id", requireAdmin, async (req, res) => {
 
     await Form.findByIdAndDelete(req.params.id);
 
-    res.json({
-      message: "Form deleted successfully",
-    });
+    res.json({ message: "Form deleted successfully" });
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to delete form",
-      error: err.message,
-    });
+    next(err);
   }
 });
 
 // Update form information (text fields only, no file changes)
-router.put("/:id", requireAdmin, async (req, res) => {
+router.put("/:id", requireAdmin, async (req, res, next) => {
   try {
     const { title, description, category } = req.body;
 
-    // Validate that required tracking text isn't cleared out by mistake
     if (title === "" || description === "") {
-      return res.status(400).json({
-        message: "Title and description cannot be empty",
-      });
+      return res.status(400).json({ message: "Title and description cannot be empty" });
     }
 
-    // Find the form and update only the text fields provided in the request body
     const updatedForm = await Form.findByIdAndUpdate(
       req.params.id,
       {
@@ -175,24 +142,16 @@ router.put("/:id", requireAdmin, async (req, res) => {
           ...(category !== undefined && { category: category.trim() }),
         },
       },
-      { new: true, runValidators: true } // 'new: true' returns the updated document back to the client
+      { new: true, runValidators: true }
     );
 
     if (!updatedForm) {
-      return res.status(404).json({
-        message: "Form not found",
-      });
+      return res.status(404).json({ message: "Form not found" });
     }
 
-    res.json({
-      message: "Form information updated successfully",
-      form: updatedForm,
-    });
+    res.json({ message: "Form updated successfully", form: updatedForm });
   } catch (err) {
-    res.status(500).json({
-      message: "Failed to update form information",
-      error: err.message,
-    });
+    next(err);
   }
 });
 module.exports = router;

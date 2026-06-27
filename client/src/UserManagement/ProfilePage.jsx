@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
@@ -227,13 +227,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col">
+    <div dir="rtl" className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col">
       <PageHeader title={t("profilePage")} buttonText={t("homeButton")} to="/home" showLanguageToggle />
 
       <main className="flex-1 p-4 sm:p-8">
         <div className="max-w-[1150px] mx-auto space-y-6">
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6">
               <h2 className="text-2xl font-bold text-brand mb-4">
                 {t("privateDetails")}
               </h2>
@@ -268,8 +268,8 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 flex flex-col justify-center items-center">
-              <h2 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-3">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 flex flex-col justify-center items-center">
+              <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-3">
                 {t("averageGrade")}
               </h2>
 
@@ -278,8 +278,8 @@ export default function ProfilePage() {
               </p>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 flex flex-col justify-center items-center">
-              <h2 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-3">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 flex flex-col justify-center items-center">
+              <h2 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-3">
                 {t("points")}
               </h2>
 
@@ -289,7 +289,7 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
+          <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6">
             <button
               type="button"
               onClick={handleDownloadAcademicPdf}
@@ -304,20 +304,20 @@ export default function ProfilePage() {
             )}
           </section>
 
-          <section ref={scheduleSectionRef} className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
+          <section ref={scheduleSectionRef} className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6">
             <h2 className="text-2xl font-bold text-brand mb-6">
-              {language === "ar" ? "جدول المحاضرات" : "מערכת שעות הרצאות"}
+              {t("scheduleTitle")}
             </h2>
 
             <div className="overflow-x-auto">
               <table className="w-full text-center border-collapse min-w-[500px]">
                 <thead>
-                  <tr className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
-                    <th className="border border-slate-300 dark:border-slate-600 py-3">
-                      {language === "ar" ? "الوقت" : "שעה"}
+                  <tr className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+                    <th className="border border-slate-300 dark:border-slate-500 py-3">
+                      {t("scheduleTimeHeader")}
                     </th>
                     {SCHEDULE_DAYS.map((day) => (
-                      <th key={day} className="border border-slate-300 dark:border-slate-600 py-3">
+                      <th key={day} className="border border-slate-300 dark:border-slate-500 py-3">
                         {day}
                       </th>
                     ))}
@@ -329,15 +329,15 @@ export default function ProfilePage() {
                     <tr>
                       <td
                         colSpan={SCHEDULE_DAYS.length + 1}
-                        className="border border-slate-300 dark:border-slate-600 h-24 text-slate-400"
+                        className="border border-slate-300 dark:border-slate-500 h-24 text-slate-400"
                       >
-                        {language === "ar" ? "لا يوجد جدول متاح" : "אין נתוני מערכת שעות זמינים כרגע"}
+                        {t("scheduleEmpty")}
                       </td>
                     </tr>
                   ) : (
                     timeSlots.map((time) => (
                       <tr key={time}>
-                        <td className="border border-slate-300 dark:border-slate-600 py-2 font-bold text-slate-600">
+                        <td className="border border-slate-300 dark:border-slate-500 py-2 font-bold text-slate-600">
                           {time}
                         </td>
 
@@ -347,14 +347,14 @@ export default function ProfilePage() {
                           return (
                             <td
                               key={day}
-                              className="border border-slate-300 dark:border-slate-600 h-24 align-top p-2"
+                              className="border border-slate-300 dark:border-slate-500 h-24 align-top p-2"
                             >
                               {entry && (
                                 <div>
                                   <p className="font-bold text-sm text-slate-800 dark:text-slate-100">
                                     {entry.courseName}
                                   </p>
-                                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                                  <p className="text-xs text-slate-500 dark:text-slate-200">
                                     {entry.startTime}–{entry.endTime}
                                     {entry.room ? ` · ${entry.room}` : ""}
                                   </p>
@@ -375,17 +375,15 @@ export default function ProfilePage() {
             {courses.length === 0 ? (
               <section
                 ref={emptyCoursesSectionRef}
-                className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 text-center"
+                className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 text-center"
               >
-                <p className="text-slate-500 dark:text-slate-400">
-                  {language === "ar"
-                    ? "لم تُكتمل أي كورسات بعد — ستظهر الدرجات هنا بعد نهاية الفصل الأول."
-                    : "עדיין לא הושלמו קורסים — הציונים יופיעו כאן לאחר תום הסמסטר הראשון."}
+                <p className="text-slate-500 dark:text-slate-200">
+                  {t("coursesEmpty")}
                 </p>
               </section>
             ) : (
               <>
-                <section className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6">
+                <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6">
                   <h2 className="text-2xl font-bold text-brand mb-6">
                     {t("gradeDistribution")}
                   </h2>
@@ -394,7 +392,7 @@ export default function ProfilePage() {
                     {gradeRanges.map((range) => (
                       <div
                         key={range.label}
-                        className="border border-slate-200 dark:border-slate-600 rounded-xl p-5 text-center"
+                        className="border border-slate-200 dark:border-slate-500 rounded-xl p-5 text-center"
                       >
                         <div className="w-20 h-20 mx-auto mb-3 rounded-full border-8 border-brand flex items-center justify-center">
                           <span className="text-2xl font-bold text-brand">
@@ -411,7 +409,7 @@ export default function ProfilePage() {
 
                 <section
                   ref={coursesTableSectionRef}
-                  className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6"
+                  className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6"
                 >
                   <div className="flex items-center justify-between mb-5">
                     <h2 className="text-2xl font-bold text-brand">
@@ -422,13 +420,13 @@ export default function ProfilePage() {
                       data-pdf-hide
                       value={sortType}
                       onChange={(e) => setSortType(e.target.value)}
-                      className="border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 rounded-xl px-4 py-2 outline-none"
+                      className="border border-slate-300 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-200 rounded-xl px-4 py-2 outline-none"
                     >
                       <option value="name">
-                        {language === "ar" ? "ترتيب حسب اسم الكورس" : "מיון לפי שם הקורס"}
+                        {t("sortByName")}
                       </option>
                       <option value="grade">
-                        {language === "ar" ? "ترتيب حسب الدرجة" : "מיון לפי ציון"}
+                        {t("sortByGrade")}
                       </option>
                     </select>
                   </div>
@@ -436,7 +434,7 @@ export default function ProfilePage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-right border-collapse min-w-[300px]">
                       <thead>
-                        <tr className="border-b dark:border-slate-600 text-slate-600 dark:text-slate-300">
+                        <tr className="border-b dark:border-slate-500 text-slate-600 dark:text-slate-200">
                           <th className="py-3">{t("courseName")}</th>
                           <th className="py-3">{t("courseGrade")}</th>
                           <th className="py-3">{t("credits")}</th>
@@ -445,7 +443,7 @@ export default function ProfilePage() {
 
                       <tbody>
                         {sortedCourses.map((course, index) => (
-                          <tr key={`${course.name}-${index}`} className="border-b dark:border-slate-600 dark:text-slate-200">
+                          <tr key={`${course.name}-${index}`} className="border-b dark:border-slate-500 dark:text-slate-200">
                             <td className="py-3">{course.name}</td>
                             <td className="py-3 font-bold">{course.grade}</td>
                             <td className="py-3">{course.credits}</td>

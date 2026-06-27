@@ -7,7 +7,7 @@ import { useLanguage } from "../contexts/languageContext";
 export default function PageHeader(props) {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { toggleLanguage, currentLanguageLabel, nextLanguageLabel } = useLanguage();
+  const { t, toggleLanguage, currentLanguageLabel, nextLanguageLabel } = useLanguage();
 
   function handleClick() {
     if (props.onClick) {
@@ -29,7 +29,7 @@ export default function PageHeader(props) {
           type="button"
           onClick={toggleTheme}
           className="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-md transition"
-          title={theme === "dark" ? "מצב בהיר" : "מצב כהה"}
+          title={theme === "dark" ? t("themeLight") : t("themeDark")}
         >
           {theme === "dark" ? <LuSun size={20} /> : <LuMoon size={20} />}
         </button>
@@ -39,7 +39,7 @@ export default function PageHeader(props) {
             type="button"
             onClick={toggleLanguage}
             className="bg-white/20 hover:bg-white/30 text-white px-3 py-2 rounded-md transition text-sm font-bold"
-            title={`עבור ל${nextLanguageLabel}`}
+            title={t("switchLanguage", { lang: nextLanguageLabel })}
           >
             {nextLanguageLabel}
           </button>

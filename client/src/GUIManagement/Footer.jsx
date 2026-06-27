@@ -1,8 +1,11 @@
+﻿import { useLanguage } from "../contexts/languageContext";
+
 export default function Footer() {
+  const { t } = useLanguage();
   return (
     <footer
       dir="rtl"
-      className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 h-14 px-8 flex items-center justify-between"
+      className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-500 text-slate-600 dark:text-slate-200 h-14 px-8 flex items-center justify-between"
     >
       <div className="font-semibold">BIOBOT 2.0 - Group B7</div>
 
@@ -13,7 +16,7 @@ export default function Footer() {
           rel="noopener noreferrer"
           className="hover:underline"
         >
-          כניסה למערכות המכללה
+          {t("footerCollegeLink")}
         </a>
 
         <span>|</span>
