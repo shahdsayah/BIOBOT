@@ -1,3 +1,5 @@
+/** @file User routes: register, login, get/update/delete users. Includes semester-to-year helper. */
+
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");

@@ -1,5 +1,5 @@
+/** @file Mongoose schema for uploaded forms. Stores title, description, category, and the file path on disk. */
 
-//bluePrint of how forms look in the DB 
 const mongoose = require("mongoose");
 
 const FormSchema = new mongoose.Schema(

@@ -1,9 +1,15 @@
+/** @file Shared page header with logo, title, back button, dark/light toggle, and optional language switcher. */
+
 import { useNavigate } from "react-router-dom";
 import SmallButton from "./SmallButton";
 import { LuSun, LuMoon } from "react-icons/lu";
 import { useTheme } from "../Services/themeService";
 import { useLanguage } from "../contexts/languageContext";
 
+/**
+ * Renders the top header for all pages.
+ * @param {{ title, showBack, showLanguageToggle, onBack, rightContent }} props
+ */
 export default function PageHeader(props) {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();

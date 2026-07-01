@@ -1,3 +1,5 @@
+/** @file Admin dashboard page component. */
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaFileAlt, FaUsers, FaChartBar, FaRobot } from "react-icons/fa";
@@ -10,6 +12,10 @@ import { getCurrentUser, logoutUser } from "../Services/authService";
 import { getStats } from "../Services/statsService";
 import { useLanguage } from "../contexts/languageContext";
 
+/*
+ * Page: Admin Dashboard
+ * Overview panel for admins showing platform stats (students, forms, questions, chats) and navigation cards to sub-sections.
+ */
 export default function AdminDashboardPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();

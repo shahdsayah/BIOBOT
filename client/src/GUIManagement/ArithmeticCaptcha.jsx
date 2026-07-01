@@ -1,3 +1,5 @@
+/** @file Arithmetic CAPTCHA component — presents a random math challenge and exposes a validate() method via ref. */
+
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useLanguage } from "../contexts/languageContext";
 
@@ -92,7 +94,7 @@ const ArithmeticCaptcha = forwardRef(function ArithmeticCaptcha(props, ref) {
         {t("captchaLabel")}
       </label>
 
-      <div className="flex items-center gap-4 mb-3">
+      <div dir="ltr" className="flex items-center gap-4 mb-3">
         <span className="text-lg font-bold text-slate-800 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-md">
           {challenge}
         </span>
@@ -112,6 +114,7 @@ const ArithmeticCaptcha = forwardRef(function ArithmeticCaptcha(props, ref) {
         value={userAnswer}
         onChange={(e) => setUserAnswer(e.target.value)}
         placeholder={t("captchaPlaceholder")}
+        dir="ltr"
         className="w-full border-b-2 border-slate-300 dark:border-slate-500 bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-2 py-3 outline-none focus:border-brand"
       />
 

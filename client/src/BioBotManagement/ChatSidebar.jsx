@@ -1,6 +1,9 @@
-﻿import PrimarySmallButton from "../GUIManagement/PrimarySmallButton";
+﻿/** @file Chat history sidebar — displays the list of past conversations with select, delete, and new-chat actions. */
+
+import PrimarySmallButton from "../GUIManagement/PrimarySmallButton";
 import { FaTrash } from "react-icons/fa";
 import { useLanguage } from "../contexts/languageContext";
+import { formatDate } from "../Services/dateUtils";
 
 export default function ChatSidebar({
   chats = [],
@@ -12,7 +15,7 @@ export default function ChatSidebar({
   const { t, language } = useLanguage();
 
   return (
-    <aside className="hidden sm:flex flex-col w-72 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-500 p-4">
+    <aside className="flex flex-col w-72 h-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-500 p-4">
       <PrimarySmallButton text={t("newChat")} onClick={onNewChat} />
 
       <h3 className="text-sm font-bold text-slate-500 dark:text-slate-200 mt-6 mb-3">
@@ -21,7 +24,10 @@ export default function ChatSidebar({
 
       <div className="flex-1 overflow-y-auto space-y-1">
         {chats.length === 0 ? (
-          <p className="text-sm text-slate-400">{t("noChats")}</p>
+          <div className="flex flex-col items-center justify-center py-8 text-center gap-2">
+            <span className="text-3xl">💬</span>
+            <p className="text-sm text-slate-400">{t("noChats")}</p>
+          </div>
         ) : (
           chats.map((chat) => (
             <div
@@ -45,7 +51,7 @@ export default function ChatSidebar({
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">
                   {chat.updatedAt
-                    ? new Date(chat.updatedAt).toLocaleDateString(language === "ar" ? "ar" : "he-IL")
+                    ? formatDate(chat.updatedAt, language)
                     : ""}
                 </div>
               </button>

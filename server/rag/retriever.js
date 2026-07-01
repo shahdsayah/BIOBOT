@@ -1,9 +1,12 @@
+/** @file RAG retriever: embeds the user's question and returns the top-k most relevant knowledge chunks via cosine similarity. */
+
 const { embedText } = require("./embedder");
 const { loadIndex } = require("./vectorStore");
 
-// ה-index נטען פעם אחת לזיכרון (לא מהדיסק בכל שאלה)
+// Index is loaded once into memory — not re-read from disk on every request
 let _index = null;
 
+/** Loads the vector index from disk on first call, then caches it in memory. */
 function getIndex() {
   if (!_index) {
     _index = loadIndex();
@@ -15,9 +18,7 @@ function getIndex() {
   return _index;
 }
 
-/**
- * Cosine similarity בין שני וקטורים
- */
+// Cosine similarity between two embedding vectors
 function cosineSimilarity(a, b) {
   let dot = 0;
   let normA = 0;
@@ -33,14 +34,7 @@ function cosineSimilarity(a, b) {
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-/**
- * מקבל שאלה + מספר תוצאות
- * מחזיר top-k chunks הכי רלוונטיים
- *
- * @param {string} question
- * @param {number} topK - כמה chunks להחזיר (ברירת מחדל 4)
- * @returns {Promise<Array<{ text, metadata, score }>>}
- */
+// Returns the top-k most relevant chunks for a given question
 async function retrieve(question, topK = 4) {
   const index = getIndex();
 
@@ -48,7 +42,7 @@ async function retrieve(question, topK = 4) {
   try {
     questionEmbedding = await embedText(question);
   } catch {
-    // embedding failed — fall back to keyword search
+    // Embedding API failed — fall back to simple keyword search
     const q = question.toLowerCase();
     const keyword = index
       .map((entry) => ({ ...entry, score: entry.text.toLowerCase().includes(q) ? 1 : 0 }))
@@ -67,9 +61,7 @@ async function retrieve(question, topK = 4) {
   return scored.slice(0, topK);
 }
 
-/**
- * מחזיר טקסט מאוחד של ה-chunks (לשימוש ב-prompt)
- */
+// Returns retrieved chunks joined as plain text, ready to inject into the Gemini prompt
 async function retrieveAsText(question, topK = 4) {
   const chunks = await retrieve(question, topK);
 
@@ -78,7 +70,7 @@ async function retrieveAsText(question, topK = 4) {
     .join("\n\n---\n\n");
 }
 
-// מאפשר ריסט של ה-index בזיכרון (לדוגמה אחרי buildIndex חדש)
+// Clears the cached index so it reloads on the next request (e.g. after rebuilding embeddings)
 function resetIndex() {
   _index = null;
 }

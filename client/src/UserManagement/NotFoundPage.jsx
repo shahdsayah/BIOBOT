@@ -1,4 +1,6 @@
-﻿import { useMemo } from "react";
+﻿/** @file 404 Not Found page component. */
+
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import PageHeader from "../GUIManagement/PageHeader";
@@ -8,6 +10,10 @@ import ActionButton from "../GUIManagement/ActionButton";
 import { getCurrentUser } from "../Services/authService";
 import { useLanguage } from "../contexts/languageContext";
 
+/*
+ * Page: 404 Not Found
+ * Shown for any unmatched route. Displays contextual navigation buttons (login, home, or admin dashboard) based on the user's role.
+ */
 export default function NotFoundPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();

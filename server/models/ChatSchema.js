@@ -1,3 +1,5 @@
+/** @file Mongoose schema for chat sessions. Each document holds a user reference, a title, and an array of messages with optional like/dislike feedback. */
+
 const mongoose = require("mongoose");
 
 const ChatSchema = new mongoose.Schema(

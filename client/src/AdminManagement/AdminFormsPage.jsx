@@ -1,3 +1,5 @@
+/** @file Admin forms management page component. */
+
 import { useEffect, useState } from "react";
 
 import PageHeader from "../GUIManagement/PageHeader";
@@ -14,9 +16,17 @@ import {
 } from "../Services/formsService";
 import API_BASE_URL from "../Services/apiConfig";
 import { useLanguage } from "../contexts/languageContext";
+import { useToast } from "../contexts/ToastContext";
+import EmptyState from "../GUIManagement/EmptyState";
+import SectionCard from "../GUIManagement/SectionCard";
 
+/*
+ * Page: Admin Forms
+ * Upload, edit, and delete academic forms (PDF/Word). Inline editing with toast notifications on save/delete.
+ */
 export default function AdminFormsPage() {
   const { t } = useLanguage();
+  const { addToast } = useToast();
   const [forms, setForms] = useState([]);
 
   const [title, setTitle] = useState("");
@@ -25,7 +35,6 @@ export default function AdminFormsPage() {
   const [file, setFile] = useState(null);
 
   const [editingId, setEditingId] = useState(null);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
   async function loadForms() {
@@ -52,7 +61,6 @@ export default function AdminFormsPage() {
     e.preventDefault();
 
     try {
-      setMessage("");
       setError("");
 
       const formData = new FormData();
@@ -65,16 +73,17 @@ export default function AdminFormsPage() {
 
       if (editingId) {
         await updateForm(editingId, formData);
-        setMessage(t("adminFormsUpdated"));
+        addToast(t("adminFormsUpdated"));
       } else {
         await createForm(formData);
-        setMessage(t("adminFormsAdded"));
+        addToast(t("adminFormsAdded"));
       }
 
       resetForm();
       await loadForms();
     } catch (err) {
       setError(err.message);
+      addToast(err.message, "error");
     }
   }
 
@@ -84,7 +93,6 @@ export default function AdminFormsPage() {
     setDescription(form.description);
     setCategory(form.category || "");
     setFile(null);
-    setMessage("");
     setError("");
   }
 
@@ -93,14 +101,14 @@ export default function AdminFormsPage() {
     if (!confirmDelete) return;
 
     try {
-      setMessage("");
       setError("");
       await deleteForm(id);
-      setMessage(t("adminFormsDeleted"));
+      addToast(t("adminFormsDeleted"));
       await loadForms();
       if (editingId === id) resetForm();
     } catch (err) {
       setError(err.message);
+      addToast(err.message, "error");
     }
   }
 
@@ -118,13 +126,13 @@ export default function AdminFormsPage() {
 
       <main className="flex-1 py-10 px-8">
         <div className="max-w-[1250px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8 order-1">
+          <SectionCard as="section" className="order-1">
             <h2 className="text-3xl font-bold text-brand mb-6">
               {t("adminFormsExisting")}
             </h2>
 
             {forms.length === 0 ? (
-              <p className="text-slate-500 dark:text-slate-200">{t("adminFormsNone")}</p>
+              <EmptyState icon="📄" title={t("emptyFormsTitle")} description={t("emptyFormsDesc")} />
             ) : (
               <div className="space-y-8">
                 {Object.entries(groupedForms).map(([categoryName, categoryForms]) => (
@@ -172,9 +180,9 @@ export default function AdminFormsPage() {
                 ))}
               </div>
             )}
-          </section>
+          </SectionCard>
 
-          <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8 order-2">
+          <SectionCard as="section" className="order-2">
             <h2 className="text-3xl font-bold text-brand mb-3">
               {editingId ? t("adminFormsEditTitle") : t("adminFormsAddTitle")}
             </h2>
@@ -227,7 +235,6 @@ export default function AdminFormsPage() {
                 )}
               </div>
 
-              {message && <p className="text-green-600 text-sm mb-4">{message}</p>}
               {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
               <ActionButton
@@ -245,7 +252,7 @@ export default function AdminFormsPage() {
                 </button>
               )}
             </form>
-          </section>
+          </SectionCard>
         </div>
       </main>
 

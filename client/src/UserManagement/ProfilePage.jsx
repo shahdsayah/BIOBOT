@@ -1,16 +1,30 @@
-﻿import { useState, useEffect, useRef } from "react";
+﻿/** @file Student profile page component. */
+
+import { useState, useEffect, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 import PageHeader from "../GUIManagement/PageHeader";
 import Footer from "../GUIManagement/Footer";
+import EmptyState from "../GUIManagement/EmptyState";
+import { SkeletonLine, SkeletonCard } from "../GUIManagement/Skeleton";
 
 import { getCurrentUser, getUserById } from "../Services/authService";
 import { useLanguage } from "../contexts/languageContext";
+import {
+  getScheduleDays,
+  calculateGpa,
+  calculateTotalCredits,
+  sortCourses,
+  buildGradeRanges,
+  getTimeSlots,
+  getClassAt,
+} from "./profileUtils";
 
-const SCHEDULE_DAYS_HE = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
-const SCHEDULE_DAYS_AR = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس"];
-
+/*
+ * Page: Student Profile
+ * Shows personal details, weekly schedule, completed courses with GPA, grade distribution chart, and a PDF download option.
+ */
 export default function ProfilePage() {
   const { t, language } = useLanguage();
   const [sortType, setSortType] = useState("name");
@@ -24,7 +38,7 @@ export default function ProfilePage() {
   const coursesTableSectionRef = useRef(null);
   const emptyCoursesSectionRef = useRef(null);
 
-  const SCHEDULE_DAYS = language === "ar" ? SCHEDULE_DAYS_AR : SCHEDULE_DAYS_HE;
+  const SCHEDULE_DAYS = getScheduleDays(language);
 
   useEffect(() => {
     async function loadStudent() {
@@ -59,36 +73,11 @@ export default function ProfilePage() {
   const courses = student?.completedCourses || [];
   const schedule = student?.schedule || [];
 
-  const sortedCourses = [...courses].sort((a, b) => {
-    if (sortType === "name") return a.name.localeCompare(b.name, "he");
-    if (sortType === "grade") return b.grade - a.grade;
-    return 0;
-  });
-
-  const totalCredits = courses.reduce((sum, course) => sum + course.credits, 0);
-
-  const gpa =
-    totalCredits > 0
-      ? courses.reduce((sum, course) => sum + course.grade * course.credits, 0) /
-        totalCredits
-      : null;
-
-  const gradeRanges = [
-    { label: "90-100", count: courses.filter((c) => c.grade >= 90).length },
-    { label: "80-89", count: courses.filter((c) => c.grade >= 80 && c.grade <= 89).length },
-    { label: "70-79", count: courses.filter((c) => c.grade >= 70 && c.grade <= 79).length },
-    { label: "60-69", count: courses.filter((c) => c.grade >= 60 && c.grade <= 69).length },
-    { label: "55-59", count: courses.filter((c) => c.grade >= 55 && c.grade <= 59).length },
-  ];
-
-  const timeSlots = [...new Set(schedule.map((entry) => entry.startTime))].sort();
-
-  function getClassAt(day, time) {
-    const dayIndexMap = language === "ar" ? SCHEDULE_DAYS_AR : SCHEDULE_DAYS_HE;
-    const dayIndex = dayIndexMap.indexOf(day);
-    const heDay = SCHEDULE_DAYS_HE[dayIndex];
-    return schedule.find((entry) => entry.day === heDay && entry.startTime === time);
-  }
+  const sortedCourses = sortCourses(courses, sortType);
+  const totalCredits = calculateTotalCredits(courses);
+  const gpa = calculateGpa(courses);
+  const gradeRanges = buildGradeRanges(courses);
+  const timeSlots = getTimeSlots(schedule);
 
   async function handleDownloadAcademicPdf() {
     setPdfError("");
@@ -238,23 +227,28 @@ export default function ProfilePage() {
                 {t("privateDetails")}
               </h2>
 
+              {loading ? (
+                <div className="space-y-3">
+                  <SkeletonLine className="h-4 w-3/4" />
+                  <SkeletonLine className="h-4 w-2/3" />
+                  <SkeletonLine className="h-4 w-1/2" />
+                  <SkeletonLine className="h-4 w-2/3" />
+                </div>
+              ) : (
+                <>
               <p>
                 <strong>{t("stdname")}:</strong>{" "}
-                {loading
-                  ? t("loading")
-                  : student
-                  ? `${student.firstName || ""} ${student.lastName || ""}`
-                  : t("notFound")}
+                {student ? `${student.firstName || ""} ${student.lastName || ""}` : t("notFound")}
               </p>
 
               <p>
                 <strong>{t("stdEmail")}:</strong>{" "}
-                {loading ? t("loading") : student?.email || t("notFound")}
+                {student?.email || t("notFound")}
               </p>
 
               <p>
                 <strong>{t("stdRole")}:</strong>{" "}
-                {loading ? t("loading") : student?.role || "student"}
+                {student?.role || "student"}
               </p>
 
               <p>
@@ -266,6 +260,8 @@ export default function ProfilePage() {
                 <strong>{t("stdYear")}:</strong>{" "}
                 {student?.year ? `${t("stdYear")} ${student.year}׳` : "—"}
               </p>
+                </>
+              )}
             </div>
 
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 flex flex-col justify-center items-center">
@@ -327,11 +323,8 @@ export default function ProfilePage() {
                 <tbody>
                   {timeSlots.length === 0 ? (
                     <tr>
-                      <td
-                        colSpan={SCHEDULE_DAYS.length + 1}
-                        className="border border-slate-300 dark:border-slate-500 h-24 text-slate-400"
-                      >
-                        {t("scheduleEmpty")}
+                      <td colSpan={SCHEDULE_DAYS.length + 1}>
+                        <EmptyState icon="📅" title={t("emptyScheduleTitle")} description={t("emptyScheduleDesc")} />
                       </td>
                     </tr>
                   ) : (
@@ -342,7 +335,7 @@ export default function ProfilePage() {
                         </td>
 
                         {SCHEDULE_DAYS.map((day) => {
-                          const entry = getClassAt(day, time);
+                          const entry = getClassAt(schedule, language, day, time);
 
                           return (
                             <td
@@ -375,11 +368,9 @@ export default function ProfilePage() {
             {courses.length === 0 ? (
               <section
                 ref={emptyCoursesSectionRef}
-                className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 text-center"
+                className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6"
               >
-                <p className="text-slate-500 dark:text-slate-200">
-                  {t("coursesEmpty")}
-                </p>
+                <EmptyState icon="📚" title={t("emptyCoursesTitle")} description={t("emptyCoursesDesc")} />
               </section>
             ) : (
               <>

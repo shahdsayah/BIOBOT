@@ -1,7 +1,10 @@
+/** @file Chatbot business logic: intent detection, academic calculations, answer builders, and Gemini prompt construction. */
+
 const { normalizeHebrewText, includesHebrewMatch } = require("./hebrewTextUtils");
 
 const TOTAL_DEGREE_CREDITS = 165;
 
+// Uses includesHebrewMatch so Hebrew morphology (prefixes/suffixes) doesn't break keyword detection
 function detectIntent(message = "") {
   const match = (keyword) => includesHebrewMatch(message, keyword);
 
@@ -62,10 +65,12 @@ function detectIntent(message = "") {
   return "general";
 }
 
+/** Returns the user's completedCourses array, or [] if not present. */
 function getCompletedCourses(user = {}) {
   return Array.isArray(user.completedCourses) ? user.completedCourses : [];
 }
 
+/** Calculates the weighted GPA: sum(grade * credits) / sum(credits). Returns 0 if no courses. */
 function calculateAverage(user = {}) {
   const courses = getCompletedCourses(user).filter(
     (course) =>
@@ -89,6 +94,7 @@ function calculateAverage(user = {}) {
   return Number((weightedSum / totalCredits).toFixed(1));
 }
 
+/** Sums credits for all passed courses (grade >= 60). */
 function calculateCompletedCredits(user = {}) {
   const courses = getCompletedCourses(user);
 
@@ -97,6 +103,7 @@ function calculateCompletedCredits(user = {}) {
     .reduce((sum, course) => sum + (course.credits || 0), 0);
 }
 
+/** Returns credits remaining until degree completion (TOTAL_DEGREE_CREDITS = 165). */
 function calculateRemainingCredits(user = {}) {
   const completedCredits = calculateCompletedCredits(user);
   const remaining = TOTAL_DEGREE_CREDITS - completedCredits;
@@ -104,12 +111,14 @@ function calculateRemainingCredits(user = {}) {
   return remaining > 0 ? Number(remaining.toFixed(1)) : 0;
 }
 
+/** Returns all courses where grade < 60. */
 function getFailedCourses(user = {}) {
   return getCompletedCourses(user).filter(
     (course) => typeof course.grade === "number" && course.grade < 60
   );
 }
 
+/** Returns the student's academic standing: "תקין" / "בהתראה" / "על תנאי" based on GPA and failed courses. */
 function calculateAcademicStatus(user = {}) {
   const average = calculateAverage(user);
   const completedCredits = calculateCompletedCredits(user);
@@ -171,6 +180,7 @@ function calculateAcademicStatus(user = {}) {
   };
 }
 
+/** Builds a formatted Hebrew text answer summarizing the student's academic status. */
 function buildAcademicStatusAnswer(user = {}) {
   const result = calculateAcademicStatus(user);
 
@@ -198,6 +208,7 @@ ${result.source}
 `;
 }
 
+/** Builds a Hebrew text answer reporting the student's weighted GPA. */
 function buildAverageAnswer(user = {}) {
   const average = calculateAverage(user);
 
@@ -210,6 +221,7 @@ function buildAverageAnswer(user = {}) {
 `;
 }
 
+/** Builds a Hebrew text answer reporting completed and remaining degree credits. */
 function buildCreditsAnswer(user = {}) {
   const completedCredits = calculateCompletedCredits(user);
   const remainingCredits = calculateRemainingCredits(user);
@@ -225,6 +237,7 @@ function buildCreditsAnswer(user = {}) {
 `;
 }
 
+/** Recommends the appropriate contact (advisor, secretary, dean) based on the message topic. */
 function buildContactRecommendation(message = "", user = {}) {
   const text = normalizeHebrewText(message);
 
@@ -263,6 +276,7 @@ function buildContactRecommendation(message = "", user = {}) {
 `;
 }
 
+/** Filters the knowledge base to sections relevant to the question's keywords. Falls back to the full KB if nothing matches. */
 function getRelevantKnowledge(question = "", knowledgeBase = "") {
   const normalizedQuestion = normalizeHebrewText(question);
 
@@ -284,6 +298,7 @@ function getRelevantKnowledge(question = "", knowledgeBase = "") {
     : knowledgeBase;
 }
 
+/** Builds the full system+user prompt to send to the Gemini API. */
 function buildGeminiPrompt({ user, message, relevantKnowledge }) {
   return `
 You are BIOBOT 2.0, an academic assistant for students in the Biotechnology Engineering department at ORT Braude College.
@@ -315,6 +330,7 @@ ${message}
 `;
 }
 
+/** Returns a pre-built local answer for personal data intents, or null to fall through to Gemini. */
 function handleLocalAnswer(message = "", user = {}) {
   const intent = detectIntent(message);
 

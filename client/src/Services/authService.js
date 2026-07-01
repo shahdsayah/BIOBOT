@@ -1,13 +1,10 @@
-/* Authentication Service Layer:
-   bridge between user interface
-   and backend server database
-*/
+/** @file Handles all user authentication: register, login, logout, token storage, and user CRUD calls. */
 
 import API_BASE_URL from "./apiConfig";
 
 const API_URL = `${API_BASE_URL}/api/users`;
 
-// Safely parse JSON, return null if body is empty
+/** Safely parses a JSON response body — returns null if the body is empty or not valid JSON. */
 async function safeJson(response) {
   const text = await response.text();
   if (!text) return null;
@@ -18,7 +15,7 @@ async function safeJson(response) {
   }
 }
 
-// Register new user
+/** Registers a new student account. @param {object} user - Registration fields (firstName, lastName, email, password, semester). */
 export async function registerUser(user) {
   const response = await apiFetch(`${API_URL}/register`, {
     method: "POST",
@@ -34,7 +31,7 @@ export async function registerUser(user) {
   return response.json();
 }
 
-// Login user
+/** Logs in and stores the JWT token and user object in localStorage. @returns {object} The logged-in user. */
 export async function loginUser(email, password) {
   const response = await apiFetch(`${API_URL}/login`, {
     method: "POST",
@@ -55,24 +52,24 @@ export async function loginUser(email, password) {
   return data.user;
 }
 
-// Logout user
+/** Clears the JWT token and user data from localStorage. */
 export function logoutUser() {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
 }
 
-// Get current logged-in user
+/** Returns the current user from localStorage, or null if not logged in. */
 export function getCurrentUser() {
   const user = localStorage.getItem("user");
   return user ? JSON.parse(user) : null;
 }
 
-// Get the stored JWT token
+/** Returns the stored JWT token, or null if the user is not authenticated. */
 export function getToken() {
   return localStorage.getItem("token");
 }
 
-// Returns headers with Authorization token for authenticated requests
+/** Builds request headers including the Authorization Bearer token. @param {object} extra - Additional headers to merge in. */
 export function authHeaders(extra = {}) {
   const token = getToken();
   return {
@@ -82,7 +79,7 @@ export function authHeaders(extra = {}) {
   };
 }
 
-// Drop-in replacement for fetch that handles expired/invalid tokens globally
+/** Wrapper around fetch that auto-redirects to /login on 401 responses. */
 export async function apiFetch(url, options = {}) {
   const response = await fetch(url, options);
 
@@ -96,7 +93,7 @@ export async function apiFetch(url, options = {}) {
   return response;
 }
 
-// Get all users from DB
+/** Fetches all users (admin only). */
 export async function getUsers() {
   const response = await apiFetch(API_URL, { headers: authHeaders() });
 
@@ -107,7 +104,7 @@ export async function getUsers() {
   return response.json();
 }
 
-// Get one user by ID from DB
+/** Fetches a single user by MongoDB ID. */
 export async function getUserById(id) {
   const response = await apiFetch(`${API_URL}/${id}`, { headers: authHeaders() });
 
@@ -118,7 +115,7 @@ export async function getUserById(id) {
   return response.json();
 }
 
-// Update user by ID
+/** Updates a user's fields by ID. @param {object} updatedData - Fields to update (e.g. role). */
 export async function updateUser(id, updatedData) {
   const response = await apiFetch(`${API_URL}/${id}`, {
     method: "PUT",
@@ -134,7 +131,7 @@ export async function updateUser(id, updatedData) {
   return response.json();
 }
 
-// Delete user by ID
+/** Deletes a user by ID (admin only). */
 export async function deleteUser(id) {
   const response = await apiFetch(`${API_URL}/${id}`, {
     method: "DELETE",

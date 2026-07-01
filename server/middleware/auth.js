@@ -1,5 +1,8 @@
+/** @file JWT authentication middleware. requireAuth verifies the token; requireAdmin also checks the admin role. */
+
 const jwt = require("jsonwebtoken");
 
+/** Verifies the Authorization Bearer token and attaches the decoded payload to req.user. */
 function requireAuth(req, res, next) {
   const authHeader = req.headers.authorization;
 
@@ -18,6 +21,7 @@ function requireAuth(req, res, next) {
   }
 }
 
+/** Runs requireAuth first, then rejects non-admin users with 403. */
 function requireAdmin(req, res, next) {
   requireAuth(req, res, () => {
     if (req.user.role !== "admin") {

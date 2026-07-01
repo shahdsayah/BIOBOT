@@ -1,4 +1,6 @@
-﻿import { useRef, useState } from "react";
+﻿/** @file Login page component. */
+
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/languageContext";
 
@@ -10,6 +12,10 @@ import PageHeader from "../GUIManagement/PageHeader";
 import { loginUser } from "../Services/authService";
 import logo from "../assets/logo.jpg";
 
+/*
+ * Page: Login
+ * Email/password form with CAPTCHA verification. Redirects to home on success or admin dashboard for admin users.
+ */
 export default function LoginPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();

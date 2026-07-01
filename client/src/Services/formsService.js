@@ -1,21 +1,18 @@
-import { getToken, apiFetch } from "./authService";
+/** @file Admin-facing form CRUD: create, search, update, and delete uploaded forms. */
+
+import { authHeaders, apiFetch } from "./authService";
 import API_BASE_URL from "./apiConfig";
 
 const API_URL = `${API_BASE_URL}/api/forms`;
 
-function authOnlyHeader() {
-  const token = getToken();
-
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
+/** Fetches all forms, optionally filtered by a search keyword. @param {string} search - Optional search query. */
 export async function getForms(search = "") {
   const url = search
     ? `${API_URL}?search=${encodeURIComponent(search)}`
     : API_URL;
 
   const response = await apiFetch(url, {
-    headers: authOnlyHeader(),
+    headers: authHeaders(),
   });
 
   if (!response.ok) {
@@ -25,10 +22,11 @@ export async function getForms(search = "") {
   return response.json();
 }
 
+/** Uploads a new form (multipart FormData with file + metadata). */
 export async function createForm(formData) {
   const response = await apiFetch(API_URL, {
     method: "POST",
-    headers: authOnlyHeader(),
+    headers: authHeaders(),
     body: formData,
   });
 
@@ -40,12 +38,13 @@ export async function createForm(formData) {
   return response.json();
 }
 
+/** Updates a form's title or description by ID. @param {object} updatedFields - Fields to change. */
 export async function updateForm(id, updatedFields) {
   const response = await apiFetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      ...authOnlyHeader(),
+      ...authHeaders(),
     },
     body: JSON.stringify(updatedFields),
   });
@@ -58,10 +57,11 @@ export async function updateForm(id, updatedFields) {
   return response.json();
 }
 
+/** Deletes a form and its uploaded file by ID. */
 export async function deleteForm(id) {
   const response = await apiFetch(`${API_URL}/${id}`, {
     method: "DELETE",
-    headers: authOnlyHeader(),
+    headers: authHeaders(),
   });
 
   if (!response.ok) {

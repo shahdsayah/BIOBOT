@@ -1,3 +1,5 @@
+/** @file Language context providing i18n for Hebrew and Arabic. Exposes t(), language, direction, and toggleLanguage. */
+
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const LANGUAGE_STORAGE_KEY = "biobot-language";
@@ -199,6 +201,25 @@ const translations = {
     adminStatsNoDisliked: "עדיין אין תשובות שלא אהבו.",
     feedbackLike: "תשובה טובה",
     feedbackDislike: "תשובה לא טובה",
+    toastChatDeleted: "השיחה נמחקה",
+    toastRoleChanged: "התפקיד עודכן בהצלחה",
+    toastUserDeleted: "המשתמש נמחק בהצלחה",
+    toastFormSaved: "הטופס נשמר בהצלחה",
+    toastFormDeleted: "הטופס נמחק",
+    emptyCoursesTitle: "אין קורסים עדיין",
+    emptyCoursesDesc: "הקורסים שתסיים יופיעו כאן",
+    emptyScheduleTitle: "אין מערכת שעות",
+    emptyScheduleDesc: "מערכת השעות שלך תופיע כאן",
+    emptyFormsTitle: "אין טפסים",
+    emptyFormsDesc: "לא נמצאו טפסים במערכת",
+    emptyUsersTitle: "אין סטודנטים",
+    emptyUsersDesc: "לא נמצאו סטודנטים רשומים",
+    emptyQuestionsTitle: "אין שאלות עדיין",
+    emptyQuestionsDesc: "שאלות הסטודנטים יופיעו כאן",
+    emptyLikedTitle: "אין תשובות שאהבו",
+    emptyLikedDesc: "תשובות שסומנו כטובות יופיעו כאן",
+    emptyDislikedTitle: "אין תשובות שלא אהבו",
+    emptyDislikedDesc: "תשובות שסומנו כלא טובות יופיעו כאן",
   },
   ar: {
     shalom: "مرحبا",
@@ -394,6 +415,25 @@ const translations = {
     adminStatsNoDisliked: "لا توجد إجابات غير معجب بها بعد.",
     feedbackLike: "إجابة جيدة",
     feedbackDislike: "إجابة غير جيدة",
+    toastChatDeleted: "تم حذف المحادثة",
+    toastRoleChanged: "تم تحديث الدور بنجاح",
+    toastUserDeleted: "تم حذف المستخدم بنجاح",
+    toastFormSaved: "تم حفظ النموذج بنجاح",
+    toastFormDeleted: "تم حذف النموذج",
+    emptyCoursesTitle: "لا توجد مقررات بعد",
+    emptyCoursesDesc: "ستظهر المقررات التي أتممتها هنا",
+    emptyScheduleTitle: "لا يوجد جدول دراسي",
+    emptyScheduleDesc: "سيظهر جدولك الدراسي هنا",
+    emptyFormsTitle: "لا توجد نماذج",
+    emptyFormsDesc: "لم يتم العثور على نماذج في النظام",
+    emptyUsersTitle: "لا يوجد طلاب",
+    emptyUsersDesc: "لم يتم العثور على طلاب مسجلين",
+    emptyQuestionsTitle: "لا توجد أسئلة بعد",
+    emptyQuestionsDesc: "ستظهر أسئلة الطلاب هنا",
+    emptyLikedTitle: "لا توجد إجابات معجب بها",
+    emptyLikedDesc: "ستظهر الإجابات المُقيَّمة بشكل إيجابي هنا",
+    emptyDislikedTitle: "لا توجد إجابات غير معجب بها",
+    emptyDislikedDesc: "ستظهر الإجابات المُقيَّمة بشكل سلبي هنا",
   },
 };
 
@@ -407,6 +447,7 @@ const LanguageContext = createContext({
   nextLanguageLabel: translations["ar"].languageName,
 });
 
+/** Wraps the app and provides language state. Persists the selected language to localStorage. */
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(() => {
     try {
@@ -460,6 +501,7 @@ export function LanguageProvider({ children }) {
   );
 }
 
+/** Returns { language, direction, t, toggleLanguage, currentLanguageLabel, nextLanguageLabel }. */
 export function useLanguage() {
   return useContext(LanguageContext);
 }

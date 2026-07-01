@@ -1,4 +1,6 @@
-﻿import { useRef, useState } from "react";
+﻿/** @file Signup page component. */
+
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/languageContext";
 
@@ -11,6 +13,10 @@ import { registerUser } from "../Services/authService";
 
 import logo from "../assets/logo.jpg";
 
+/*
+ * Page: Signup
+ * Registration form with first name, last name, email, password, semester selection, and CAPTCHA.
+ */
 export default function SignupPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();

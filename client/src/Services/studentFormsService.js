@@ -1,14 +1,15 @@
-import { getToken, apiFetch } from "./authService";
+/** @file Student-facing form service: fetch available forms and resolve file download URLs. */
+
+import { authHeaders, apiFetch } from "./authService";
 import API_BASE_URL from "./apiConfig";
 
 const SERVER_URL = API_BASE_URL;
 const FORMS_API_URL = `${SERVER_URL}/api/forms`;
 
-// Get all forms uploaded by admin
+/** Fetches all forms published by the admin. Handles both array and { forms: [] } response shapes. */
 export async function getStudentForms() {
-  const token = getToken();
   const response = await apiFetch(FORMS_API_URL, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    headers: authHeaders(),
   });
 
   const data = await response.json();
@@ -17,8 +18,7 @@ export async function getStudentForms() {
     throw new Error(data.message || "Failed to load forms");
   }
 
-  // Supports both cases:
-  // backend returns array directly OR { forms: [...] }
+  // Backend returns either an array directly or { forms: [...] }
   if (Array.isArray(data)) {
     return data;
   }
@@ -26,7 +26,7 @@ export async function getStudentForms() {
   return data.forms || [];
 }
 
-// Build full file URL for uploaded files
+/** Resolves the full download URL for a form's file, handling both absolute and relative paths. */
 export function getFormFileUrl(form) {
   const filePath = form.fileUrl || form.filePath || form.path || "";
 

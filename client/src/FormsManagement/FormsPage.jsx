@@ -1,4 +1,6 @@
-﻿import { useState, useEffect } from "react";
+﻿/** @file Student forms page component. */
+
+import { useState, useEffect } from "react";
 import PageHeader from "../GUIManagement/PageHeader";
 import Footer from "../GUIManagement/Footer";
 
@@ -9,6 +11,10 @@ import { useLanguage } from "../contexts/languageContext";
 
 import { getStudentForms, getFormFileUrl } from "../Services/studentFormsService";
 
+/*
+ * Page: Forms & Procedures
+ * Lists all academic forms uploaded by the admin. Students can search by name and open/download files.
+ */
 export default function FormsPage() {
   const { t } = useLanguage();
   const [forms, setForms] = useState([]);

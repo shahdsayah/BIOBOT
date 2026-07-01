@@ -1,11 +1,13 @@
-const mongoose = require("mongoose"); //bring the Mongoose library into the project
+/** @file Mongoose schema for users. Stores personal info, role, weekly schedule, and completed courses with grades. */
 
-const UserSchema = new mongoose.Schema( //defining the blueprint of how the data must look
+const mongoose = require("mongoose");
+
+const UserSchema = new mongoose.Schema(
   {
     firstName: {
-      type: String, //will be treated as text
-      required: true, // mandatory field
-      trim: true, //removes leading and trailing whitespace from the string before saving it to the database
+      type: String,
+      required: true,
+      trim: true,
     },
 
     lastName: {
@@ -59,8 +61,8 @@ const UserSchema = new mongoose.Schema( //defining the blueprint of how the data
     ],
   },
   {
-    timestamps: true, //date tracking
-    versionKey: false, //do not track document revisions
+    timestamps: true,
+    versionKey: false,
   }
 );
 

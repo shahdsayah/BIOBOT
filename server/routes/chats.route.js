@@ -1,3 +1,5 @@
+/** @file Chat routes: create/get/delete conversations, send messages to the AI, and submit per-message like/dislike feedback. */
+
 const express = require("express");
 
 const Chat = require("../models/ChatSchema");

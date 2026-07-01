@@ -1,9 +1,14 @@
+/** @file Admin users management page component. */
+
 import { useEffect, useState } from "react";
 import { FaUsers, FaUserShield, FaUserGraduate } from "react-icons/fa";
 
 import PageHeader from "../GUIManagement/PageHeader";
 import Footer from "../GUIManagement/Footer";
 import SearchBar from "../GUIManagement/SearchBar";
+import EmptyState from "../GUIManagement/EmptyState";
+import SectionCard from "../GUIManagement/SectionCard";
+import { SkeletonCard } from "../GUIManagement/Skeleton";
 
 import {
   getCurrentUser,
@@ -12,9 +17,16 @@ import {
   deleteUser,
 } from "../Services/authService";
 import { useLanguage } from "../contexts/languageContext";
+import { useToast } from "../contexts/ToastContext";
+import { formatDate } from "../Services/dateUtils";
 
+/*
+ * Page: Admin Users
+ * Lists all registered students and admins. Supports search, sort, role change, and user deletion with toast feedback.
+ */
 export default function AdminUsersPage() {
   const { t } = useLanguage();
+  const { addToast } = useToast();
   const [search, setSearch] = useState("");
   const [sortType, setSortType] = useState("newest");
   const [users, setUsers] = useState([]);
@@ -50,14 +62,16 @@ export default function AdminUsersPage() {
       setError("");
       await updateUser(user._id, { role: newRole });
       await loadUsers();
+      addToast(t("toastRoleChanged"));
     } catch (err) {
       setError(err.message);
+      addToast(err.message, "error");
     }
   }
 
   async function handleDeleteUser(user) {
     if (currentUser?._id === user._id) {
-      alert(t("adminUsersCannotDeleteSelf"));
+      addToast(t("adminUsersCannotDeleteSelf"), "error");
       return;
     }
 
@@ -70,8 +84,10 @@ export default function AdminUsersPage() {
       setError("");
       await deleteUser(user._id);
       await loadUsers();
+      addToast(t("toastUserDeleted"));
     } catch (err) {
       setError(err.message);
+      addToast(err.message, "error");
     }
   }
 
@@ -113,7 +129,7 @@ export default function AdminUsersPage() {
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
             {t("adminUsersCreatedAt")}{" "}
             {user.createdAt
-              ? new Date(user.createdAt).toLocaleDateString("he-IL")
+              ? formatDate(user.createdAt)
               : t("adminUsersNotAvailable")}
           </p>
 
@@ -150,15 +166,19 @@ export default function AdminUsersPage() {
 
       <main className="flex-1 p-4 sm:p-8">
         <div className="max-w-[1250px] mx-auto">
-          {loading && (
-            <p className="text-slate-500 dark:text-slate-200 text-center">{t("adminUsersLoading")}</p>
-          )}
-
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-          {!loading && (
+          {loading ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8">
+              {[0, 1].map((i) => (
+                <SectionCard key={i} className="space-y-4">
+                  {[0, 1, 2].map((j) => <SkeletonCard key={j} />)}
+                </SectionCard>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <SectionCard as="section">
                 <div className="flex items-center gap-3 mb-6">
                   <FaUserGraduate className="text-4xl text-brand" />
                   <div>
@@ -191,14 +211,14 @@ export default function AdminUsersPage() {
 
                 <div className="space-y-4">
                   {students.length === 0 ? (
-                    <p className="text-slate-500 dark:text-slate-200">{t("adminUsersNoStudents")}</p>
+                    <EmptyState icon="🎓" title={t("emptyUsersTitle")} description={t("emptyUsersDesc")} />
                   ) : (
                     students.map((user) => renderUserCard(user, <FaUserGraduate />, "student"))
                   )}
                 </div>
-              </section>
+              </SectionCard>
 
-              <section className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-8">
+              <SectionCard as="section">
                 <div className="flex items-center gap-3 mb-6">
                   <FaUsers className="text-4xl text-brand" />
                   <div>
@@ -218,7 +238,7 @@ export default function AdminUsersPage() {
                     admins.map((user) => renderUserCard(user, <FaUserShield />, "admin"))
                   )}
                 </div>
-              </section>
+              </SectionCard>
             </div>
           )}
         </div>

@@ -1,4 +1,6 @@
-﻿import { useNavigate } from "react-router-dom";
+﻿/** @file Student home page component. */
+
+import { useNavigate } from "react-router-dom";
 
 import { FaUser, FaRobot, FaFileAlt } from "react-icons/fa";
 
@@ -11,6 +13,10 @@ import { useLanguage } from "../contexts/languageContext";
 
 import logo from "../assets/logo.jpg";
 
+/*
+ * Page: Student Home
+ * Landing page after login — shows navigation cards linking to Profile, BioBot chatbot, and Forms.
+ */
 export default function StudentHomePage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
